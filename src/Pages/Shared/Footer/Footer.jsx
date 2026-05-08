@@ -1,27 +1,12 @@
+import Logo from "../../../Component/Logo/Logo";
+
 const Footer = () => {
   return (
     <footer className="bg-gray-100 py-12 px-4">
       <div className="max-w-[90%] mx-auto bg-black text-[#ffffff] rounded-3xl px-8 py-12 md:px-12 md:py-16 text-center">
         {/* Logo Section */}
-        <div className="flex items-center justify-center gap-3 mb-4">
-          <svg
-            width="40"
-            height="32"
-            viewBox="0 0 100 80"
-            xmlns="http://www.w3.org/2000/svg"
-            className="flex-shrink-0"
-            aria-hidden="true"
-          >
-            <polygon points="50,2 95,25 95,55 50,78 5,55 5,25" fill="#b7e04c" />
-            <path
-              d="M30 40 L50 22 L70 40 L50 58 Z"
-              fill="#0b0b0b"
-              opacity="0.08"
-            />
-          </svg>
-          <h2 className="text-white text-2xl md:text-3xl font-bold tracking-wider">
-            ZapShift
-          </h2>
+        <div>
+          <Logo />
         </div>
 
         {/* Tagline */}

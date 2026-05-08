@@ -2,9 +2,8 @@
 /* @plugin "daisyui"; */
 @import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 
-root {
-  background-color: #D3D3D3ed;
-  color: #000000;
+* {
+  background-color: bg-gray-100 ;
 }
 
 .body {
