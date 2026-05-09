@@ -1,13 +1,11 @@
 @import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
 
-
 :root {
   --color-primary: #caeb66;
   --color-secondary: #33929d;
   --color-3: #03373d;
 }
-
 
 body {
   font-family: "Urbanist", sans-serif;
@@ -16,3 +14,55 @@ body {
 }
 
 /* Note: daisyUI plugin/theme configuration belongs in tailwind.config.js, not in this CSS file. */
+
+/* Swiper / Review visuals */
+#reviews {
+  height: 100%;
+}
+
+html,
+body {
+  position: relative;
+  height: 100%;
+}
+
+.mySwiper {
+  width: 100%;
+  padding-top: 32px;
+  padding-bottom: 64px;
+}
+
+.mySwiper .swiper-wrapper {
+  align-items: center;
+}
+
+.mySwiper .swiper-slide {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.review-card {
+  width: 100%;
+  transition:
+    transform 300ms ease,
+    opacity 300ms ease,
+    filter 300ms ease;
+}
+
+.mySwiper .swiper-slide-prev .review-card,
+.mySwiper .swiper-slide-next .review-card {
+  transform: scale(0.9);
+  opacity: 0.45;
+  filter: blur(0.1px);
+}
+
+.mySwiper .swiper-slide-active .review-card {
+  transform: scale(1);
+  opacity: 1;
+  filter: none;
+}
+
+.swiper-pagination {
+  bottom: 8px !important;
+}
