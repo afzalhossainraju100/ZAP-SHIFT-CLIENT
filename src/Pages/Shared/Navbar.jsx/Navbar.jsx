@@ -95,7 +95,7 @@ const Navbar = () => {
   );
 
   return (
-    <div className="flex items-center justify-between bg-[#ffffff] text-[#000000] font-[#000000] px-4 py-1 mt-10 rounded-3xl shadow-md">
+    <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between bg-[#ffffff] text-[#000000] font-[#000000] px-4 py-1 rounded-3xl shadow-md">
       {/* Logo Section */}
       <div className="text-[#000000]">
         <Logo></Logo>
@@ -110,7 +110,7 @@ const Navbar = () => {
           Sign In
         </button>
         <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-          Sign Up
+          Be a rider
         </button>
         <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
           Profile
@@ -139,7 +139,7 @@ const Navbar = () => {
 
       {/* Mobile Menu */}
       {isMenuOpen && (
-        <div className="absolute top-20 left-0 right-0 bg-[#ffffff] md:hidden rounded-b-3xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 z-50">
+        <div className="absolute top-20 left-4 right-4 bg-[#ffffff] md:hidden rounded-b-3xl shadow-lg animate-in fade-in slide-in-from-top-2 duration-300 z-50">
           <ul className="flex flex-col gap-2 p-4 list-none">
             {links}
             <hr className="my-2 border-[#f0f0f0]" />
