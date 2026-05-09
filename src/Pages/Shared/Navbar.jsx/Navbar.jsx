@@ -13,7 +13,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }
@@ -27,7 +27,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }
@@ -41,7 +41,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }
@@ -55,7 +55,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }
@@ -69,7 +69,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }
@@ -83,7 +83,7 @@ const Navbar = () => {
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
-                ? "bg-[var(--color-primary)] text-[#000000] font-semibold shadow-lg"
+                ? "bg-(--color-primary) text-[#000000] font-semibold shadow-lg"
                 : "text-[#000000] hover:bg-[#f0f0f0]"
             } hover:scale-105 active:scale-95`
           }

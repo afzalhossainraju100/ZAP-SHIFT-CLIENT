@@ -1,20 +1,17 @@
 @import url("https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
-@plugin "daisyui/index.js"{
-  themes: light --default;
- };
-@plugin "daisyui/theme" {
-  name: "light";
-  default: true;
-  --color-primary:#CAEB66;
-  --color-secondary: #33929D;
-  --color-3: #03373D;
+
+:root {
+  --color-primary: #caeb66;
+  --color-secondary: #33929d;
+  --color-3: #03373d;
 }
 
 
-
-.body {
+body {
   font-family: "Urbanist", sans-serif;
   font-optical-sizing: auto;
   font-style: normal;
 }
+
+/* Note: daisyUI plugin/theme configuration belongs in tailwind.config.js, not in this CSS file. */

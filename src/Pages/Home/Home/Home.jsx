@@ -3,6 +3,7 @@ import WorkingProcess from "../WorkingProcess/WorkingProcess";
 import OurService from "../OurService/OurService";
 import HelpOthers from "../HelpOthers/HelpOthers";
 import Commitment from "../Commitment/Commitment";
+import Marchant from "../Merchant/Merchant";
 
 const Home = () => {
     return (
@@ -12,6 +13,7 @@ const Home = () => {
             <OurService></OurService>
             <HelpOthers></HelpOthers>
             <Commitment></Commitment>
+            <Marchant></Marchant>
         </div>
     );
 };

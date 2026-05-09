@@ -34,9 +34,11 @@ const OurService = () => {
     },
   ];
   return (
-    <div>
-      <h1 className="text-3xl font-bold text-center mb-8">Our Services</h1>
-      <p className="text-center">
+    <div className="bg-[#03373D] p-25 rounded-lg mt-10">
+      <h1 className="text-3xl font-bold text-center mb-8 text-[#ffffff]">
+        Our Services
+      </h1>
+      <p className="text-center text-[#ffffff]">
         Enjoy fast, reliable parcel delivery with real-time tracking and zero
         hassle. From personal packages to business shipments — we deliver on
         time, every time.
@@ -45,7 +47,7 @@ const OurService = () => {
         {Services.map((service, index) => (
           <div
             key={index}
-            className="bg-[#ffffff] rounded-lg shadow-md p-6 text-center flex flex-col items-center transition-transform duration-300 hover:scale-105"
+            className="bg-[#ffffff] rounded-lg shadow-md p-6 text-center flex flex-col items-center transition-transform duration-300 hover:bg-[#CAEB66] hover:scale-105"
           >
             <img src={Service} alt="icon" />
             <h2 className="text-xl font-semibold mb-4">{service.name}</h2>
