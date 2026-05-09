@@ -2,8 +2,8 @@ import Logo from "../../../Component/Logo/Logo";
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-100 py-12 px-4">
-      <div className="max-w-[90%] mx-auto bg-black text-[#ffffff] rounded-3xl px-8 py-12 md:px-12 md:py-16 text-center">
+    <footer className="py-12 px-4">
+      <div className=" bg-black text-[#ffffff] rounded-3xl px-8 py-12 md:px-12 md:py-16 text-center">
         {/* Logo Section */}
         <div>
           <Logo />
