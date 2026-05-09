@@ -4,21 +4,36 @@ import brand3 from "../../../assets/brands/casio.png";
 import brand4 from "../../../assets/brands/moonstar.png";
 import brand5 from "../../../assets/brands/randstad.png";
 import brand6 from "../../../assets/brands/start_people.png";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay } from "swiper/modules";
+import "swiper/css";
 
 const HelpOthers = () => {
+
+  const brands = [brand1, brand2, brand3, brand4, brand5, brand6];
     return (
       <div className="flax flax-cols items-center container mx-auto px-4 py-12 justify-center">
         <h1 className="text-3xl font-bold text-center mb-8">
           We've helped thousands of sales teams
         </h1>
-        <div className="flex gap-10 flex-wrap justify-between mb-20">
-          <img src={brand1} alt="Brand 1" />
-          <img src={brand2} alt="Brand 2" />
-          <img src={brand3} alt="Brand 3" />
-          <img src={brand4} alt="Brand 4" />
-          <img src={brand5} alt="Brand 5" />
-          <img src={brand6} alt="Brand 6" />
-        </div>
+        <Swiper
+          modules={[Autoplay]}
+          spaceBetween={40}
+          slidesPerView={2} // Mobile
+          breakpoints={{
+            640: { slidesPerView: 3 },
+            1024: { slidesPerView: 5 },
+          }}
+          autoplay={{ delay: 2000, disableOnInteraction: false }}
+          loop={true}
+          className="mb-20"
+        >
+          {brands.map((b, i) => (
+            <SwiperSlide key={i}>
+              <img src={b} alt={`Brand ${i}`} className="mx-auto" />
+            </SwiperSlide>
+          ))}
+        </Swiper>
       </div>
     );
 };
