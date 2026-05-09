@@ -9,13 +9,14 @@ import Reviews from "../Reviews/Reviews";
 
 
 const reviewsPromise = fetch("/reviews.json").then(res => res.json());
+const servicePromise = fetch("/services.json").then(res => res.json());
 
 const Home = () => {
     return (
       <div>
         <Banner></Banner>
         <WorkingProcess></WorkingProcess>
-        <OurService></OurService>
+        <OurService servicePromise={servicePromise}></OurService>
         <HelpOthers></HelpOthers>
         <Commitment></Commitment>
         <Marchant></Marchant>
