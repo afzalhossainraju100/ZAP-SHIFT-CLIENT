@@ -28,7 +28,7 @@ const Commitment = () => {
   ];
   return (
     <div>
-      <hr class="border-t border-dashed border-gray-400 my-4" />
+      <hr className="border-t border-dashed border-gray-400 my-4" />
 
       <div className="flex flex-col gap-6 mt-15 mb-15">
         {commits.map((commit) => (
@@ -39,7 +39,7 @@ const Commitment = () => {
             <img src={commit.img} alt={commit.title} className="mx-auto mb-4" />
 
             <div className="h-50">
-                <hr class="h-full border-l border-dashed border-gray-400 mx-4 w-px bg-transparent " />
+                <hr className="h-full border-l border-dashed border-gray-400 mx-4 w-px bg-transparent " />
             </div>
             
 
@@ -51,7 +51,7 @@ const Commitment = () => {
         ))}
       </div>
 
-      <hr class="border-t border-dashed border-gray-400 my-4" />
+      <hr className="border-t border-dashed border-gray-400 my-4" />
     </div>
   );
 };
