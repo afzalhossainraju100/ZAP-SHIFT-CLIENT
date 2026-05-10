@@ -4,6 +4,8 @@ import Home from "../Pages/Home/Home/Home";
 import Coverage from "../Pages/Coverage/Coverage";
 import About from "../Pages/About/About";
 import Error from "../Pages/Error/Error";
+import SignIn from "../Pages/SignIn/SignIn";
+import SignUp from "../Pages/SignUp/SignUp";
 
 export const router = createBrowserRouter([
   {
@@ -26,7 +28,15 @@ export const router = createBrowserRouter([
       {
         path: "services",
         Component: Error,
-      }
+      },
+      {
+        path: "signin",
+        Component: SignIn,
+      },
+      {
+        path: "signup",
+        Component: SignUp,
+      },
     ],
   },
 ]);
