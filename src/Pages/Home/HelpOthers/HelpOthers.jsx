@@ -24,7 +24,7 @@ const HelpOthers = () => {
             640: { slidesPerView: 3 },
             1024: { slidesPerView: 5 },
           }}
-          autoplay={{ delay: 2000, disableOnInteraction: false }}
+          autoplay={{ delay: 250, disableOnInteraction: false }}
           loop={true}
           className="mb-20"
         >

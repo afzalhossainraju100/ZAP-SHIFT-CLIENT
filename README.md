@@ -16,8 +16,11 @@ The React Compiler is not enabled on this template because of its impact on dev 
 If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
 
 
-1. Covarage|
+1. react install
+   depedences install (react router, tailwind css, google font, react icon)
+   set dependencies
+2. Covarage|
    install: React Leaflet
    Link:https://react-leaflet.js.org/?utm_source=chatgpt.com
    video: M-11[60(8,9)]
-2. 
+3. 
