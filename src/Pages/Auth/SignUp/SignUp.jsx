@@ -1,12 +1,16 @@
+import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 
-
-
 const SignUp = () => {
+  const { register, handleSubmit } = useForm();
+
+  const handleRegistration = (data) => {
+    console.log("Registration data:", data);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8">
       <div className="w-105 max-w-full bg-white rounded-2xl shadow-lg p-10">
-
         <h1 className="text-4xl font-extrabold leading-tight text-start">
           Create an Account
         </h1>
@@ -14,30 +18,44 @@ const SignUp = () => {
           Register with ZapShift
         </div>
 
-        <label className="block text-sm text-gray-700 mb-2">Name</label>
-        <input
-          type="text"
-          placeholder="Name"
-          className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
-        />
+        <form onSubmit={handleSubmit(handleRegistration)}>
+          <label className="block text-sm text-gray-700 mb-2">Name</label>
+          <input
+            type="text"
+            placeholder="Name"
+            className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
+            {...register("name", { required: "Name is required" })}
+          />
 
-        <label className="block text-sm text-gray-700 mb-2">Email</label>
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
-        />
+          <label className="block text-sm text-gray-700 mb-2">Email</label>
+          <input
+            type="email"
+            placeholder="Email"
+            className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
+            {...register("email", {
+              required: "Email is required",
+              pattern: /^\S+@\S+$/i,
+            })}
+          />
 
-        <label className="block text-sm text-gray-700 mb-2">Password</label>
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
-        />
+          <label className="block text-sm text-gray-700 mb-2">Password</label>
+          <input
+            type="password"
+            {...register("password", {
+              required: "Password is required",
+              minLength: 6,
+            })}
+            placeholder="Password"
+            className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
+          />
 
-        <button className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition">
-          Register
-        </button>
+          <button
+            type="submit"
+            className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition"
+          >
+            Register
+          </button>
+        </form>
 
         <div className="text-gray-500 mt-4 text-sm text-center">
           {"Already have an account?"}

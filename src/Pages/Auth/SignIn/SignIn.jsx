@@ -1,38 +1,53 @@
-
 import { NavLink } from "react-router-dom";
-
-
+import { useForm } from "react-hook-form";
 
 const SignIn = () => {
+  const { register, handleSubmit } = useForm();
+
+  const onSubmit = (data) => {
+    console.log("SignIn data:", data);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center p-8 ">
       <div className="w-105 max-w-full bg-white rounded-2xl shadow-lg p-10">
         <h1 className="text-4xl font-extrabold leading-tight">Welcome Back</h1>
         <div className="text-gray-500 mt-2 mb-6">Login with ZapShift</div>
 
-        <label className="block text-sm text-gray-700 mb-2">Email</label>
-        <input
-          type="email"
-          placeholder="Email"
-          className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
-        />
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-700 mb-2">Email</label>
+            <input
+              {...register("email", { required: true })}
+              type="email"
+              placeholder="Email"
+              className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
+            />
+          </div>
 
-        <label className="block text-sm text-gray-700 mb-2">Password</label>
-        <input
-          type="password"
-          placeholder="Password"
-          className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-2 focus:outline-none focus:ring-2 focus:ring-lime-200"
-        />
+          <div>
+            <label className="block text-sm text-gray-700 mb-2">Password</label>
+            <input
+              {...register("password", { required: true })}
+              type="password"
+              placeholder="Password"
+              className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
+            />
+          </div>
 
-        <div className="mb-4">
-          <a href="#" className="text-sm text-gray-500 underline">
-            Forget Password?
-          </a>
-        </div>
+          <div className="mb-4">
+            <a href="#" className="text-sm text-gray-500 underline">
+              Forget Password?
+            </a>
+          </div>
 
-        <button className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition">
-          Login
-        </button>
+          <button
+            type="submit"
+            className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition"
+          >
+            Login
+          </button>
+        </form>
 
         <div className="text-gray-500 mt-3 text-sm">
           {"Don't have any account?"}
