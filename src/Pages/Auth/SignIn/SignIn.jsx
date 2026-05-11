@@ -31,7 +31,7 @@ const SignIn = () => {
 
         <div className="text-gray-500 mt-3 text-sm">
           {"Don't have any account?"}
-          <a href="#" className="text-green-600 ml-2 font-semibold">
+          <a href="/signup" className="text-green-600 ml-2 font-semibold">
             Register
           </a>
         </div>

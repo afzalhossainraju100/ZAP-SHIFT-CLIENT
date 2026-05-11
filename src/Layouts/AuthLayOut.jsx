@@ -4,7 +4,7 @@ import authImage from "../assets/authImage.png";
 
 const AuthLayOut = () => {
   return (
-    <div className="flex sm:flex-col items-start justify-start min-h-screen gap-10 w-[95%] mx-auto py-8 ">
+    <div className="flex sm:flex-col items-start justify-start min-h-screen gap-10 w-[95%] mx-auto mt-8 ">
       <div className="bg-white">
         <Logo></Logo>
       </div>
