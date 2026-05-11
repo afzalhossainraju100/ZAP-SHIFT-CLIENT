@@ -4,8 +4,9 @@ import Home from "../Pages/Home/Home/Home";
 import Coverage from "../Pages/Coverage/Coverage";
 import About from "../Pages/About/About";
 import Error from "../Pages/Error/Error";
-import SignIn from "../Pages/SignIn/SignIn";
-import SignUp from "../Pages/SignUp/SignUp";
+import SignIn from "../Pages/Auth/SignIn/SignIn";
+import SignUp from "../Pages/Auth/SignUp/SignUp";
+import AuthLayOut from "../Layouts/AuthLayOut";
 
 export const router = createBrowserRouter([
   {
@@ -29,14 +30,20 @@ export const router = createBrowserRouter([
         path: "services",
         Component: Error,
       },
+    ],
+  },
+  {
+    path: '/',
+    Component: AuthLayOut,
+    children: [
       {
-        path: "signin",
+        path: 'signin',
         Component: SignIn,
       },
       {
-        path: "signup",
+        path: 'signup',
         Component: SignUp,
-      },
-    ],
-  },
+      }
+    ]
+  }
 ]);
