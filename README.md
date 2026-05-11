@@ -23,4 +23,6 @@ If you are developing a production application, we recommend using TypeScript wi
    install: React Leaflet
    Link:https://react-leaflet.js.org/?utm_source=chatgpt.com
    video: M-11[60(8,9)]
-3. 
+3. Authentication page
+   use react hook form for better registration and better login
+   npm install react-hook-form

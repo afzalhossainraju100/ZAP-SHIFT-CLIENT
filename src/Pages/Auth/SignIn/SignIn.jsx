@@ -1,3 +1,8 @@
+
+import { NavLink } from "react-router-dom";
+
+
+
 const SignIn = () => {
   return (
     <div className="min-h-screen flex items-center justify-center p-8 ">
@@ -31,9 +36,9 @@ const SignIn = () => {
 
         <div className="text-gray-500 mt-3 text-sm">
           {"Don't have any account?"}
-          <a href="/signup" className="text-green-600 ml-2 font-semibold">
+          <NavLink to="/signup" className="text-green-600 ml-2 font-semibold">
             Register
-          </a>
+          </NavLink>
         </div>
 
         <div className="text-center text-gray-500 my-4">Or</div>
