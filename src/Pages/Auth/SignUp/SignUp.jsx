@@ -2,7 +2,11 @@ import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
 
 const SignUp = () => {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const handleRegistration = (data) => {
     console.log("Registration data:", data);
@@ -26,6 +30,11 @@ const SignUp = () => {
             className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
             {...register("name", { required: "Name is required" })}
           />
+          {errors.name && (
+            <p className="-mt-2 mb-4 text-sm text-red-500">
+              {errors.name.message}
+            </p>
+          )}
 
           <label className="block text-sm text-gray-700 mb-2">Email</label>
           <input
@@ -34,20 +43,36 @@ const SignUp = () => {
             className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
             {...register("email", {
               required: "Email is required",
-              pattern: /^\S+@\S+$/i,
+              pattern: {
+                value: /^\S+@\S+$/i,
+                message: "Please enter a valid email",
+              },
             })}
           />
+          {errors.email && (
+            <p className="-mt-2 mb-4 text-sm text-red-500">
+              {errors.email.message}
+            </p>
+          )}
 
           <label className="block text-sm text-gray-700 mb-2">Password</label>
           <input
             type="password"
             {...register("password", {
               required: "Password is required",
-              minLength: 6,
+              minLength: {
+                value: 6,
+                message: "Password must be at least 6 characters",
+              },
             })}
             placeholder="Password"
             className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-4 focus:outline-none focus:ring-2 focus:ring-lime-200"
           />
+          {errors.password && (
+            <p className="-mt-2 mb-4 text-sm text-red-500">
+              {errors.password.message}
+            </p>
+          )}
 
           <button
             type="submit"

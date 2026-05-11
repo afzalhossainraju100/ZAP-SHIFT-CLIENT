@@ -2,7 +2,11 @@ import { NavLink } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 const SignIn = () => {
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = (data) => {
     console.log("SignIn data:", data);
@@ -18,21 +22,43 @@ const SignIn = () => {
           <div>
             <label className="block text-sm text-gray-700 mb-2">Email</label>
             <input
-              {...register("email", { required: true })}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Please enter a valid email",
+                },
+              })}
               type="email"
               placeholder="Email"
               className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.email.message}
+              </p>
+            )}
           </div>
 
           <div>
             <label className="block text-sm text-gray-700 mb-2">Password</label>
             <input
-              {...register("password", { required: true })}
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 6,
+                  message: "Password must be at least 6 characters",
+                },
+              })}
               type="password"
               placeholder="Password"
               className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           <div className="mb-4">
