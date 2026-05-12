@@ -1,5 +1,6 @@
 import { useForm } from "react-hook-form";
 import { NavLink } from "react-router-dom";
+import useAuth from "../../../Hooks/useAuth";
 
 const SignUp = () => {
   const {
@@ -8,8 +9,18 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
+  const { signUpUser } = useAuth();
+
   const handleRegistration = (data) => {
     console.log("Registration data:", data);
+    signUpUser(data.email, data.password)
+      .then((userCredential) => {
+        const user = userCredential.user;
+        console.log("User registered successfully:", user);
+      })
+      .catch((error) => {
+        console.error("Error during registration:", error);
+      });
   };
 
   return (
