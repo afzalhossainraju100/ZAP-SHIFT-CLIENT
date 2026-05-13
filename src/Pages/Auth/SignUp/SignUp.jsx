@@ -48,7 +48,8 @@ const SignUp = () => {
             updateUserProfile(userProfile)
               .then(() => {
                 console.log("User profile updated successfully");
-                navigate("/", { replace: true });
+                const from = location.state?.from?.pathname || "/";
+                navigate(from, { replace: true });
               })
               .catch((error) => {
                 console.error("Error updating user profile:", error);
