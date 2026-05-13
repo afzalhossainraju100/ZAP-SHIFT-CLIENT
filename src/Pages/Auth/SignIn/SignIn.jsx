@@ -82,9 +82,12 @@ const SignIn = () => {
           </div>
 
           <div className="mb-4">
-            <a href="#" className="text-sm text-gray-500 underline">
+            <NavLink
+              to="/forget-password"
+              className="text-sm text-gray-500 underline hover:text-lime-400 transition"
+            >
               Forget Password?
-            </a>
+            </NavLink>
           </div>
 
           <button
@@ -97,8 +100,11 @@ const SignIn = () => {
 
         <div className="text-gray-500 mt-3 text-sm">
           {"Don't have any account?"}
-          <NavLink to="/signup" className="text-green-600 ml-2 font-semibold"
-          state={location.state}>
+          <NavLink
+            to="/signup"
+            className="text-green-600 ml-2 font-semibold"
+            state={location.state}
+          >
             Register
           </NavLink>
         </div>

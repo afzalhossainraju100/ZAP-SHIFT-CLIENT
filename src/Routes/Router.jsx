@@ -9,6 +9,8 @@ import SignUp from "../Pages/Auth/SignUp/SignUp";
 import AuthLayOut from "../Layouts/AuthLayOut";
 import Rider from "../Pages/Rider/Rider";
 import PrivateRoute from "./PrivateRoute";
+import ForgetPassword from "../Pages/Auth/ForgetPassword/ForgetPassword";
+import { Navigate } from "react-router-dom";
 
 export const router = createBrowserRouter([
   {
@@ -34,24 +36,38 @@ export const router = createBrowserRouter([
       },
       {
         path: "rider",
-        element: <PrivateRoute>
-          <Rider />
-          </PrivateRoute>,
-      }
+        element: (
+          <PrivateRoute>
+            <Rider />
+          </PrivateRoute>
+        ),
+      },
     ],
   },
   {
-    path: '/',
+    path: "/",
     Component: AuthLayOut,
     children: [
       {
-        path: 'signin',
+        path: "signin",
         Component: SignIn,
       },
       {
-        path: 'signup',
+        path: "signup",
         Component: SignUp,
-      }
-    ]
-  }
+      },
+      {
+        path: "forget-password",
+        Component: ForgetPassword,
+      },
+      {
+        path: "enter-code",
+        element: <Navigate to="/forget-password" replace />,
+      },
+      {
+        path: "reset-password",
+        element: <Navigate to="/forget-password" replace />,
+      },
+    ],
+  },
 ]);

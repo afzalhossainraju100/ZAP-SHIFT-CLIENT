@@ -7,6 +7,8 @@ import {
   signOut,
   onAuthStateChanged,
   updateProfile,
+  sendPasswordResetEmail,
+  confirmPasswordReset,
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 import { useEffect, useState } from "react";
@@ -42,7 +44,16 @@ const AuthProvider = ({ children }) => {
       return Promise.reject(new Error("No authenticated user"));
     return updateProfile(auth.currentUser, profile);
   };
-//observe user state
+
+  const handleSendPasswordResetEmail = (email) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
+  const handleResetPassword = (code, newPassword) => {
+    return confirmPasswordReset(auth, code, newPassword);
+  };
+
+  //observe user state
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
@@ -60,12 +71,12 @@ const AuthProvider = ({ children }) => {
     signInGoogle,
     logOut,
     updateUserProfile,
+    handleSendPasswordResetEmail,
+    handleResetPassword,
   };
 
   return (
-    <AuthContext.Provider value={authInfo}>
-      {children}
-      </AuthContext.Provider>
+    <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>
   );
 };
 
