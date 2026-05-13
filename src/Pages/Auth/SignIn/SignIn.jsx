@@ -97,7 +97,8 @@ const SignIn = () => {
 
         <div className="text-gray-500 mt-3 text-sm">
           {"Don't have any account?"}
-          <NavLink to="/signup" className="text-green-600 ml-2 font-semibold">
+          <NavLink to="/signup" className="text-green-600 ml-2 font-semibold"
+          state={location.state}>
             Register
           </NavLink>
         </div>

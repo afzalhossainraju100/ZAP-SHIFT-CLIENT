@@ -4,6 +4,7 @@ import useAuth from "../../../Hooks/useAuth";
 import { useNavigate } from "react-router-dom";
 import SocialLogIn from "../SocialLogIn/SocialLogIn";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const SignUp = () => {
   const {
@@ -13,7 +14,9 @@ const SignUp = () => {
   } = useForm();
 
   const { signUpUser, updateUserProfile } = useAuth();
+  const location = useLocation();
   const navigate = useNavigate();
+  console.log("in the registration page", location);
 
   const handleRegistration = (data) => {
     console.log("Registration data:", data);
