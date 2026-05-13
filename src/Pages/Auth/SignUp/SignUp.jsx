@@ -154,7 +154,8 @@ const SignUp = () => {
 
         <div className="text-gray-500 mt-4 text-sm text-center">
           {"Already have an account?"}
-          <NavLink to="/signin" className="text-green-600 ml-2 font-semibold">
+          <NavLink to="/signin" className="text-green-600 ml-2 font-semibold"
+          state = {location.state}>
             Login
           </NavLink>
         </div>
