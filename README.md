@@ -26,3 +26,13 @@ If you are developing a production application, we recommend using TypeScript wi
 3. Authentication page
    use react hook form for better registration and better login
    npm install react-hook-form
+4. go to react router for all info
+   https://github.com/remix-run/react-router
+   go to example/auth/src/app.txs
+
+5. use ImgBB for Image upload 
+   npm install axios
+   from imgBB: https://api.imgbb.com/1/upload?expiration=600&key=YOUR_CLIENT_API_KEY
+   from firebase: https://firebase.google.com/docs/auth/web/manage-users
+
+

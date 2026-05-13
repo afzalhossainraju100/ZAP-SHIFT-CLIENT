@@ -7,6 +7,8 @@ import Error from "../Pages/Error/Error";
 import SignIn from "../Pages/Auth/SignIn/SignIn";
 import SignUp from "../Pages/Auth/SignUp/SignUp";
 import AuthLayOut from "../Layouts/AuthLayOut";
+import Rider from "../Pages/Rider/Rider";
+import PrivateRoute from "./PrivateRoute";
 
 export const router = createBrowserRouter([
   {
@@ -30,6 +32,12 @@ export const router = createBrowserRouter([
         path: "services",
         Component: Error,
       },
+      {
+        path: "rider",
+        element: <PrivateRoute>
+          <Rider />
+          </PrivateRoute>,
+      }
     ],
   },
   {

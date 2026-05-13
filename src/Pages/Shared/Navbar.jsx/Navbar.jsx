@@ -1,9 +1,22 @@
 import { NavLink } from "react-router";
 import { useState } from "react";
 import Logo from "../../../Component/Logo/Logo";
+import useAuth from "../../../Hooks/useAuth";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user, logOut } = useAuth();
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        console.log("User logged out successfully");
+      })
+      .catch((error) => {
+        console.error("Error during logout:", error);
+      });
+  };
 
   const links = (
     <>
@@ -106,20 +119,32 @@ const Navbar = () => {
 
       {/* Desktop Auth Buttons */}
       <div className="hidden md:flex gap-3">
-        <NavLink to="/signin">
-          <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-          Sign In
-        </button>
-          </NavLink>
-        <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-          Be a rider
-        </button>
-        <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-          Profile
-        </button>
-        <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-          Logout
-        </button>
+        {user ? (
+          <div>
+            <a onClick={handleLogOut}>
+              <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+                Logout
+              </button>
+            </a>
+            <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+              Profile
+            </button>
+          </div>
+        ) : (
+          <div>
+            <Link to="/signin">
+              <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+                Sign In
+              </button>
+            </Link>
+            <Link to='/rider'>
+            <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+              Be a rider
+            </button>
+            </Link>
+            
+          </div>
+        )}
       </div>
 
       {/* Mobile Hamburger Menu */}
@@ -145,26 +170,27 @@ const Navbar = () => {
           <ul className="flex flex-col gap-2 p-4 list-none">
             {links}
             <hr className="my-2 border-[#f0f0f0]" />
-            <li>
-              <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
-                Sign In
-              </button>
-            </li>
-            <li>
-              <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
-                Sign Up
-              </button>
-            </li>
-            <li>
-              <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
-                Profile
-              </button>
-            </li>
-            <li>
-              <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
-                Logout
-              </button>
-            </li>
+
+            {user ? (
+              <div>
+                <li>
+                  <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                    Logout
+                  </button>
+                </li>
+                <li>
+                  <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                    Profile
+                  </button>
+                </li>
+              </div>
+            ) : (
+              <li>
+                <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                  Sign In
+                </button>
+              </li>
+            )}
           </ul>
         </div>
       )}

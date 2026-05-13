@@ -8,7 +8,7 @@ import iconUrl from "leaflet/dist/images/marker-icon.png";
 import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { RouterProvider } from "react-router/dom";
 import { router } from "./Routes/Router";
-import { AuthProvider } from "./Contaxt/AuthContext/AuthContext";
+import AuthProvider from "./Contaxt/AuthContext/AuthProvider";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({

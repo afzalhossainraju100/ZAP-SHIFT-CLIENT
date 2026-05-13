@@ -1,4 +1,5 @@
 import { GoArrowUpRight } from "react-icons/go";
+import { Link } from "react-router-dom";
 
 const BannerButton = () => {
   return (
@@ -11,9 +12,12 @@ const BannerButton = () => {
           <GoArrowUpRight />
         </div>
       </div>
-      <button className="p-2 bg-[#03373D] text-[#ffffff] rounded-lg transition-all duration-300 hover:bg-[#CAEB66] hover:text-[#000000] hover:scale-105 active:scale-95">
+      <Link to="/rider">
+            <button className="p-2 bg-[#03373D] text-[#ffffff] rounded-lg transition-all duration-300 hover:bg-[#CAEB66] hover:text-[#000000] hover:scale-105 active:scale-95">
         Be A Rider
       </button>
+      </Link>
+
     </div>
   );
 };
