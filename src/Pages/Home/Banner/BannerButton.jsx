@@ -1,7 +1,18 @@
 import { GoArrowUpRight } from "react-icons/go";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import useAuth from "../../../Hooks/useAuth";
 
 const BannerButton = () => {
+  const navigate = useNavigate();
+  const { user } = useAuth();
+  const handleRiderClick = () => {
+    if (user) {
+      navigate("/rider");
+    } else {
+      navigate("/signin", { state: { from: { pathname: "/rider" } } });
+    }
+  };
+
   return (
     <div className="flex gap-4 absolute top-135 left-60 transform -translate-x-1/2 -translate-y-1/2">
       <div className="flex gap-0 items-center">
@@ -12,12 +23,12 @@ const BannerButton = () => {
           <GoArrowUpRight />
         </div>
       </div>
-      <Link to="/rider">
-            <button className="p-2 bg-[#03373D] text-[#ffffff] rounded-lg transition-all duration-300 hover:bg-[#CAEB66] hover:text-[#000000] hover:scale-105 active:scale-95">
+      <button
+        onClick={handleRiderClick}
+        className="p-2 bg-[#03373D] text-[#ffffff] rounded-lg transition-all duration-300 hover:bg-[#CAEB66] hover:text-[#000000] hover:scale-105 active:scale-95"
+      >
         Be A Rider
       </button>
-      </Link>
-
     </div>
   );
 };

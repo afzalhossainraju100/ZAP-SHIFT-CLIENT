@@ -2,11 +2,20 @@ import { NavLink } from "react-router";
 import { useState } from "react";
 import Logo from "../../../Component/Logo/Logo";
 import useAuth from "../../../Hooks/useAuth";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRiderClick = () => {
+    if (user) {
+      navigate("/rider");
+    } else {
+      navigate("/signin", { state: { from: { pathname: "/rider" } } });
+    }
+  };
 
   const handleLogOut = () => {
     logOut()
@@ -137,12 +146,12 @@ const Navbar = () => {
                 Sign In
               </button>
             </Link>
-            <Link to='/rider'>
-            <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+            <button
+              onClick={handleRiderClick}
+              className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95"
+            >
               Be a rider
             </button>
-            </Link>
-            
           </div>
         )}
       </div>
