@@ -35,4 +35,20 @@ If you are developing a production application, we recommend using TypeScript wi
    from imgBB: https://api.imgbb.com/1/upload?expiration=600&key=YOUR_CLIENT_API_KEY
    from firebase: https://firebase.google.com/docs/auth/web/manage-users
 
-
+complete user flow:
+User clicks "Be A Rider" (from BannerButton or Navbar)
+    ↓
+handleRiderClick() checks user state
+    ↓
+├─ YES (logged in) → navigate("/rider") directly
+└─ NO (not logged in) → navigate("/signin", state: { from: { pathname: "/rider" } })
+                           ↓
+                      SignIn page loads
+                           ↓
+                      User logs in
+                           ↓
+                      SignIn reads location.state?.from?.pathname
+                           ↓
+                      navigate("/rider") automatically
+                           ↓
+                      PrivateRoute allows access ✅
