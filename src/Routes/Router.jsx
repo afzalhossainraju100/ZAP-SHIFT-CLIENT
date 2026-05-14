@@ -11,6 +11,7 @@ import Rider from "../Pages/Rider/Rider";
 import PrivateRoute from "./PrivateRoute";
 import ForgetPassword from "../Pages/Auth/ForgetPassword/ForgetPassword";
 import { Navigate } from "react-router-dom";
+import SendParcel from "../Pages/SendParcel/SendParcel";
 
 export const router = createBrowserRouter([
   {
@@ -39,6 +40,14 @@ export const router = createBrowserRouter([
         element: (
           <PrivateRoute>
             <Rider />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "send-parcel",
+        element: (
+          <PrivateRoute>
+            <SendParcel />
           </PrivateRoute>
         ),
       },
