@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import Swal from "sweetalert2";
 
 const SendParcel = () => {
   const [regions, setRegions] = useState([]);
@@ -54,17 +55,21 @@ const SendParcel = () => {
     }
 
     //sweetAlart
-    
+
     Swal.fire({
-      title: "Are you sure?",
-      text: "You won't be able to revert this!",
+      title: "Agree With The Payment?",
+      text: `You have to Pay ${cost} BDT!`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
       cancelButtonColor: "#d33",
-      confirmButtonText: "Yes, delete it!",
+      confirmButtonText: "I Agree!",
     }).then((result) => {
       if (result.isConfirmed)
+
+        //add soon
+
+
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",
@@ -74,8 +79,8 @@ const SendParcel = () => {
 
     //sweetalart
 
-    const bookingPayload = { ...data, cost };
-    console.log("Calculated Booking Payload:", bookingPayload);
+    // const bookingPayload = { ...data, cost };
+    // console.log("Calculated Booking Payload:", bookingPayload);
   }, []);
 
   useEffect(() => {
