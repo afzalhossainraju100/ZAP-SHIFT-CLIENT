@@ -1,23 +1,90 @@
-import { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useEffect, useState, useCallback, useMemo } from "react";
+import { useForm, useWatch } from "react-hook-form";
 
 const SendParcel = () => {
-  const [districts, setDistricts] = useState([]);
-  const { register, handleSubmit } = useForm();
+  const [regions, setRegions] = useState([]);
+  const [regionDistrictMap, setRegionDistrictMap] = useState({});
+  const { register, handleSubmit, control } = useForm();
 
-  const handleSendParcel = (data) => {
+  // Use useWatch hook (compiler-friendly alternative to watch())
+  const senderRegion = useWatch({
+    control,
+    name: "senderRegion",
+    defaultValue: "",
+  });
+  const receiverRegion = useWatch({
+    control,
+    name: "receiverRegion",
+    defaultValue: "",
+  });
+
+  // Get filtered districts based on selected region
+  const senderDistricts = useMemo(
+    () => (senderRegion ? regionDistrictMap[senderRegion] || [] : []),
+    [senderRegion, regionDistrictMap],
+  );
+
+  const receiverDistricts = useMemo(
+    () => (receiverRegion ? regionDistrictMap[receiverRegion] || [] : []),
+    [receiverRegion, regionDistrictMap],
+  );
+
+  const handleSendParcel = useCallback((data) => {
     console.log(data);
-  };
+
+    const isSameDistrict = data.senderDistrict === data.receiverDistrict;
+    const isDocument = data.parcelType === "document";
+    const parcelWeight = parseFloat(data.parcelWeight);
+
+    let cost;
+
+    if (isDocument) {
+      cost = isSameDistrict ? 60 : 80;
+    } else {
+      if (parcelWeight <= 3) {
+        cost = isSameDistrict ? 110 : 150;
+      } else {
+        const minCharge = isSameDistrict ? 110 : 150;
+        const extraWeight = parcelWeight - 3;
+        const extraCharge = Math.ceil(extraWeight) * (isSameDistrict ? 40 : 80);
+        cost = minCharge + extraCharge;
+      }
+    }
+
+    const bookingPayload = { ...data, cost };
+    console.log("Calculated Booking Payload:", bookingPayload);
+  }, []);
 
   useEffect(() => {
-    fetch("/serviceCenter.json")
-      .then((res) => res.json())
-      .then((data) => {
-        const uniqueDistricts = [
-          ...new Set(data.map((item) => item.district)),
+    const loadServiceCenterData = async () => {
+      try {
+        const response = await fetch("/serviceCenter.json");
+        const data = await response.json();
+
+        // Extract unique regions
+        const uniqueRegions = [
+          ...new Set(data.map((item) => item.region)),
         ].sort();
-        setDistricts(uniqueDistricts);
-      });
+        setRegions(uniqueRegions);
+
+        // Create a map of region to districts
+        const map = {};
+        uniqueRegions.forEach((region) => {
+          map[region] = [
+            ...new Set(
+              data
+                .filter((item) => item.region === region)
+                .map((item) => item.district),
+            ),
+          ].sort();
+        });
+        setRegionDistrictMap(map);
+      } catch (error) {
+        console.error("Error loading service center data:", error);
+      }
+    };
+
+    loadServiceCenterData();
   }, []);
 
   return (
@@ -135,14 +202,32 @@ const SendParcel = () => {
 
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Your Region
+                  </label>
+                  <select
+                    {...register("senderRegion")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
+                  >
+                    <option value="">Select your Region</option>
+                    {regions.map((region) => (
+                      <option key={region} value={region}>
+                        {region}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Your District
                   </label>
                   <select
                     {...register("senderDistrict")}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
+                    disabled={!senderRegion}
                   >
                     <option value="">Select your District</option>
-                    {districts.map((district) => (
+                    {senderDistricts.map((district) => (
                       <option key={district} value={district}>
                         {district}
                       </option>
@@ -207,14 +292,32 @@ const SendParcel = () => {
 
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Receiver Region
+                  </label>
+                  <select
+                    {...register("receiverRegion")}
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
+                  >
+                    <option value="">Select Receiver Region</option>
+                    {regions.map((region) => (
+                      <option key={region} value={region}>
+                        {region}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Receiver District
                   </label>
                   <select
                     {...register("receiverDistrict")}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
+                    disabled={!receiverRegion}
                   >
                     <option value="">Select District</option>
-                    {districts.map((district) => (
+                    {receiverDistricts.map((district) => (
                       <option key={district} value={district}>
                         {district}
                       </option>
