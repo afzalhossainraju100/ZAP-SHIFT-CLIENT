@@ -46,10 +46,33 @@ const SendParcel = () => {
       } else {
         const minCharge = isSameDistrict ? 110 : 150;
         const extraWeight = parcelWeight - 3;
-        const extraCharge = Math.ceil(extraWeight) * (isSameDistrict ? 40 : 80);
+        const extraCharge = isSameDistrict
+          ? extraWeight * 40
+          : extraWeight * 40 + 40;
         cost = minCharge + extraCharge;
       }
     }
+
+    //sweetAlart
+    
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You won't be able to revert this!",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, delete it!",
+    }).then((result) => {
+      if (result.isConfirmed)
+        Swal.fire({
+          title: "Deleted!",
+          text: "Your file has been deleted.",
+          icon: "success",
+        });
+    });
+
+    //sweetalart
 
     const bookingPayload = { ...data, cost };
     console.log("Calculated Booking Payload:", bookingPayload);

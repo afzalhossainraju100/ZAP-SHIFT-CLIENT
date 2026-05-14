@@ -52,3 +52,5 @@ handleRiderClick() checks user state
                       navigate("/rider") automatically
                            ↓
                       PrivateRoute allows access ✅
+
+ 6. npm install sweetalert2 install for review
