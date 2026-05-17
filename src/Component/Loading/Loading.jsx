@@ -2,7 +2,7 @@ import { LoaderCircle, Package2, Truck } from "lucide-react";
 
 const Loading = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[radial-gradient(circle_at_top,_rgba(255,255,255,0.98),_rgba(247,247,247,0.95)_45%,_rgba(235,235,235,0.9))] px-4">
+    <div className="min-h-screen flex items-center justify-center  px-4">
       <div className="w-full max-w-md rounded-3xl border border-black/10 bg-white/90 p-8 text-center shadow-[0_24px_80px_rgba(0,0,0,0.12)] backdrop-blur-sm">
         <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-[rgba(255,193,7,0.14)] text-black shadow-inner">
           <div className="relative flex h-16 w-16 items-center justify-center rounded-full bg-white shadow-lg">

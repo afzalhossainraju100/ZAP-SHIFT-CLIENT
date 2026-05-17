@@ -1,11 +1,15 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import Swal from "sweetalert2";
+import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useAuth from "../../Hooks/useAuth";
 
 const SendParcel = () => {
   const [regions, setRegions] = useState([]);
   const [regionDistrictMap, setRegionDistrictMap] = useState({});
   const { register, handleSubmit, control } = useForm();
+  const { user } = useAuth();
+  const axiosSecure = useAxiosSecure();
 
   // Use useWatch hook (compiler-friendly alternative to watch())
   const senderRegion = useWatch({
@@ -30,58 +34,80 @@ const SendParcel = () => {
     [receiverRegion, regionDistrictMap],
   );
 
-  const handleSendParcel = useCallback((data) => {
-    console.log(data);
+  const handleSendParcel = useCallback(
+    (data) => {
+      console.log(data);
 
-    const isSameDistrict = data.senderDistrict === data.receiverDistrict;
-    const isDocument = data.parcelType === "document";
-    const parcelWeight = parseFloat(data.parcelWeight);
+      const isSameDistrict = data.senderDistrict === data.receiverDistrict;
+      const isDocument = data.parcelType === "document";
+      const parcelWeight = parseFloat(data.parcelWeight);
 
-    let cost;
+      let cost;
 
-    if (isDocument) {
-      cost = isSameDistrict ? 60 : 80;
-    } else {
-      if (parcelWeight <= 3) {
-        cost = isSameDistrict ? 110 : 150;
+      if (isDocument) {
+        cost = isSameDistrict ? 60 : 80;
       } else {
-        const minCharge = isSameDistrict ? 110 : 150;
-        const extraWeight = parcelWeight - 3;
-        const extraCharge = isSameDistrict
-          ? extraWeight * 40
-          : extraWeight * 40 + 40;
-        cost = minCharge + extraCharge;
+        if (parcelWeight <= 3) {
+          cost = isSameDistrict ? 110 : 150;
+        } else {
+          const minCharge = isSameDistrict ? 110 : 150;
+          const extraWeight = parcelWeight - 3;
+          const extraCharge = isSameDistrict
+            ? extraWeight * 40
+            : extraWeight * 40 + 40;
+          cost = minCharge + extraCharge;
+        }
       }
-    }
 
-    //sweetAlart
+      //sweetAlart
 
-    Swal.fire({
-      title: "Agree With The Payment?",
-      text: `You have to Pay ${cost} BDT!`,
-      icon: "warning",
-      showCancelButton: true,
-      confirmButtonColor: "#3085d6",
-      cancelButtonColor: "#d33",
-      confirmButtonText: "I Agree!",
-    }).then((result) => {
-      if (result.isConfirmed)
+      Swal.fire({
+        title: "Agree With The Payment?",
+        text: `You have to Pay ${cost} BDT!`,
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#3085d6",
+        cancelButtonColor: "#d33",
+        confirmButtonText: "I Agree!",
+      }).then((result) => {
+        if (result.isConfirmed) {
+          //save the parcel to the database
+          axiosSecure
+            .post("/parcels", { ...data, cost })
+            .then((response) => {
+              console.log("Parcel booking response:", response.data);
+              if (response.data.insertedId) {
+                Swal.fire(
+                  "Success!",
+                  "Your Parcel has been booked successfully.",
+                  "success",
+                );
+              } else {
+                Swal.fire(
+                  "Error!",
+                  "There was an issue booking your parcel. Please try again.",
+                  "error",
+                );
+              }
+            })
+            .catch((error) => {
+              console.error("Error booking parcel:", error);
+              Swal.fire(
+                "Error!",
+                "There was an issue booking your parcel. Please try again.",
+                "error",
+              );
+            });
+        }
+      });
 
-        //add soon
+      //sweetalart
 
-
-        Swal.fire({
-          title: "Deleted!",
-          text: "Your file has been deleted.",
-          icon: "success",
-        });
-    });
-
-    //sweetalart
-
-    // const bookingPayload = { ...data, cost };
-    // console.log("Calculated Booking Payload:", bookingPayload);
-  }, []);
+      // const bookingPayload = { ...data, cost };
+      // console.log("Calculated Booking Payload:", bookingPayload);
+    },
+    [axiosSecure],
+  );
 
   useEffect(() => {
     const loadServiceCenterData = async () => {
@@ -200,6 +226,7 @@ const SendParcel = () => {
                     type="text"
                     {...register("senderName")}
                     placeholder="Sender Name"
+                    defaultValue={user?.displayName}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>
@@ -224,6 +251,19 @@ const SendParcel = () => {
                     type="tel"
                     {...register("senderPhone")}
                     placeholder="Sender Phone No"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Sender Email
+                  </label>
+                  <input
+                    type="email"
+                    {...register("senderEmail")}
+                    placeholder="Sender Email"
+                    defaultValue={user?.email}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>
@@ -314,6 +354,18 @@ const SendParcel = () => {
                     type="tel"
                     {...register("receiverContact")}
                     placeholder="Receiver Contact No"
+                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
+                  />
+                </div>
+
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Receiver Email
+                  </label>
+                  <input
+                    type="email"
+                    {...register("receiverEmail")}
+                    placeholder="Receiver Email"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>

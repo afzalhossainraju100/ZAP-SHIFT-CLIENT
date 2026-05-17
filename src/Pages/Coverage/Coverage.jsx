@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { MapContainer, Marker, Popup, TileLayer, useMap } from "react-leaflet";
-import { useLoaderData } from "react-router";
+import { useLoaderData } from "react-router-dom";
 
 const defaultCenter = [23.8103, 90.4125];
 

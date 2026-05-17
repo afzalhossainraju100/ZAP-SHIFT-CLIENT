@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router";
+import { createBrowserRouter } from "react-router-dom";
 import RootLayout from "../Layouts/RootLayout";
 import Home from "../Pages/Home/Home/Home";
 import Coverage from "../Pages/Coverage/Coverage";
@@ -12,6 +12,8 @@ import PrivateRoute from "./PrivateRoute";
 import ForgetPassword from "../Pages/Auth/ForgetPassword/ForgetPassword";
 import { Navigate } from "react-router-dom";
 import SendParcel from "../Pages/SendParcel/SendParcel";
+import DashboardLayOut from "../Layouts/DashboardLayOut";
+import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
 
 export const router = createBrowserRouter([
   {
@@ -76,6 +78,20 @@ export const router = createBrowserRouter([
       {
         path: "reset-password",
         element: <Navigate to="/forget-password" replace />,
+      },
+    ],
+  },
+  {
+    path: "dashboard",
+    element: (
+      <PrivateRoute>
+        <DashboardLayOut />
+      </PrivateRoute>
+    ),
+    children: [
+      {
+        path: "my-parcels",
+        Component: MyParcels,
       },
     ],
   },
