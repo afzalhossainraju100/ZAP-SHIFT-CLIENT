@@ -9,6 +9,7 @@ import shadowUrl from "leaflet/dist/images/marker-shadow.png";
 import { RouterProvider } from "react-router-dom";
 import { router } from "./Routes/Router";
 import AuthProvider from "./Contaxt/AuthContext/AuthProvider";
+import { QueryClientProvider, QueryClient } from "@tanstack/react-query";
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -17,10 +18,14 @@ L.Icon.Default.mergeOptions({
   shadowUrl,
 });
 
+const queryClient = new QueryClient();
+
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <AuthProvider>
-      <RouterProvider router={router} />
-    </AuthProvider>
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <RouterProvider router={router} />
+      </AuthProvider>
+    </QueryClientProvider>
   </StrictMode>,
 );

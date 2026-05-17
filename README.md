@@ -56,4 +56,5 @@ handleRiderClick() checks user state
  6. npm install sweetalert2 install for review
 
  7 https://tanstack.com/query/latest/docs/framework/react/installation
+ https://tanstack.com/query/latest/docs/framework/react/quick-start
  for data fetch and state management
