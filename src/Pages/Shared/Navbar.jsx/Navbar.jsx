@@ -87,7 +87,7 @@ const Navbar = () => {
       </li>
       <li>
         <NavLink
-          to="/blog"
+          to="/dashboard"
           className={({ isActive }) =>
             `px-3 py-2 rounded-lg transition-all duration-300 ease-in-out ${
               isActive
@@ -96,7 +96,7 @@ const Navbar = () => {
             } hover:scale-105 active:scale-95`
           }
         >
-          Blog
+          Dashboard
         </NavLink>
       </li>
       <li>
@@ -115,6 +115,12 @@ const Navbar = () => {
       </li>
     </>
   );
+
+  {
+    user && <>
+    <li><NavLink to="/dashboard/my-parcels">My Parcel</NavLink></li>
+    </>
+  }
 
   return (
     <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between bg-[#ffffff] text-[#000000] font-[#000000] px-4 py-1 rounded-3xl shadow-md">

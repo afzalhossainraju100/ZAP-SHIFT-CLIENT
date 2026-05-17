@@ -54,3 +54,6 @@ handleRiderClick() checks user state
                       PrivateRoute allows access ✅
 
  6. npm install sweetalert2 install for review
+
+ 7 https://tanstack.com/query/latest/docs/framework/react/installation
+ for data fetch and state management

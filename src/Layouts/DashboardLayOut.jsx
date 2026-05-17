@@ -1,12 +1,12 @@
-import { Outlet } from "react-router-dom";
+import { Link, Outlet, NavLink } from "react-router-dom";
 
 const DashboardLayOut = () => {
   return (
-    <div className="drawer lg:drawer-open">
+    <div className="drawer bg-gray-100 text-[#000000] lg:drawer-open">
       <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
       <div className="drawer-content">
         {/* Navbar */}
-        <nav className="navbar w-full bg-base-300">
+        <nav className="navbar w-full bg-[#ffffff] shadow-lg text-[#000000] fixed top-0 z-10">
           <label
             htmlFor="my-drawer-4"
             aria-label="open sidebar"
@@ -28,7 +28,9 @@ const DashboardLayOut = () => {
               <path d="M14 10l2 2l-2 2"></path>
             </svg>
           </label>
-          <div className="px-4">Navbar Title</div>
+          <div className="px-4 p-1 rounded-lg bg-[#caeb66]">
+            Zap Shift Dashboard
+          </div>
         </nav>
         {/* Page content here */}
         <div className="p-4">
@@ -42,12 +44,13 @@ const DashboardLayOut = () => {
           aria-label="close sidebar"
           className="drawer-overlay"
         ></label>
-        <div className="flex min-h-full flex-col items-start bg-base-200 is-drawer-close:w-14 is-drawer-open:w-64">
+        <div className="flex min-h-full flex-col items-start bg-[#ffffff] text-[#000000] is-drawer-close:w-14 is-drawer-open:w-64">
           {/* Sidebar content here */}
           <ul className="menu w-full grow">
             {/* List item */}
             <li>
-              <button
+              <Link
+                to="/"
                 className="is-drawer-close:tooltip is-drawer-close:tooltip-right"
                 data-tip="Homepage"
               >
@@ -66,9 +69,12 @@ const DashboardLayOut = () => {
                   <path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 </svg>
                 <span className="is-drawer-close:hidden">Homepage</span>
-              </button>
+              </Link>
             </li>
-
+            {/* our dashboard items */}
+            <li>
+              <NavLink to="/dashboard/my-parcels">My Parcels</NavLink>
+            </li>
             {/* List item */}
             <li>
               <button
