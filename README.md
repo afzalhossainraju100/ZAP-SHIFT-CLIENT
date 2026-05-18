@@ -65,4 +65,4 @@ handleRiderClick() checks user state
 
             https://docs.stripe.com/api/checkout/sessions/create
 
-            
+            https://docs.stripe.com/testing
