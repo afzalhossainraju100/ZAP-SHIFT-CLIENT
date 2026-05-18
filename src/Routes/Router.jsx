@@ -14,6 +14,7 @@ import { Navigate } from "react-router-dom";
 import SendParcel from "../Pages/SendParcel/SendParcel";
 import DashboardLayOut from "../Layouts/DashboardLayOut";
 import MyParcels from "../Pages/Dashboard/MyParcels/MyParcels";
+import Payment from "../Pages/Dashboard/Payment/Payment";
 
 export const router = createBrowserRouter([
   {
@@ -93,6 +94,10 @@ export const router = createBrowserRouter([
         path: "my-parcels",
         Component: MyParcels,
       },
+      {
+        path: "payment/:parcelId",
+        Component: Payment,
+      }
     ],
   },
 ]);

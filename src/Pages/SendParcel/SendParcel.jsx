@@ -175,7 +175,7 @@ const SendParcel = () => {
                     type="radio"
                     {...register("parcelType")}
                     value="not-document"
-                    className="w-4 h-4 text-gray-400 accent-gray-400"
+                    className="w-4 h-4 text-green-500 accent-green-500"
                   />
                   <span className="text-gray-700 font-medium">
                     Not-Document

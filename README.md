@@ -58,3 +58,11 @@ handleRiderClick() checks user state
  7 https://tanstack.com/query/latest/docs/framework/react/installation
  https://tanstack.com/query/latest/docs/framework/react/quick-start
  for data fetch and state management
+
+ 8 Payment: 1. ssl commerz
+            2. stripe
+            https://docs.stripe.com/checkout/quickstart?lang=node&locale=en-GB&utm_source=chatgpt.com&client=react
+
+            https://docs.stripe.com/api/checkout/sessions/create
+
+            
