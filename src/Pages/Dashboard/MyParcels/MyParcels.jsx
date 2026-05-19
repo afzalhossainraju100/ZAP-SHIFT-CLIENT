@@ -62,7 +62,7 @@ const MyParcels = () => {
         paymentInfo,
       );
       if (res.data?.url) {
-        window.location.href = res.data.url;
+        window.location.assign(res.data.url);
       }
 
   };
