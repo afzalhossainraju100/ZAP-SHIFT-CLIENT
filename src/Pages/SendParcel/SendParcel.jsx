@@ -3,6 +3,7 @@ import { useForm, useWatch } from "react-hook-form";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
 import useAuth from "../../Hooks/useAuth";
+import { useNavigate } from "react-router-dom";
 
 const SendParcel = () => {
   const [regions, setRegions] = useState([]);
@@ -10,6 +11,7 @@ const SendParcel = () => {
   const { register, handleSubmit, control } = useForm();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
+  const navigate = useNavigate();
 
   // Use useWatch hook (compiler-friendly alternative to watch())
   const senderRegion = useWatch({
@@ -68,7 +70,7 @@ const SendParcel = () => {
         showCancelButton: true,
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
-        confirmButtonText: "I Agree!",
+        confirmButtonText: "Agreed!",
       }).then((result) => {
         if (result.isConfirmed) {
           //save the parcel to the database
@@ -77,11 +79,14 @@ const SendParcel = () => {
             .then((response) => {
               console.log("Parcel booking response:", response.data);
               if (response.data.insertedId) {
-                Swal.fire(
-                  "Success!",
-                  "Your Parcel has been booked successfully.",
-                  "success",
-                );
+                Swal.fire({
+                  position: "top-end",
+                  icon: "success",
+                  title: "Parcel Booked. Please Pay",
+                  showConfirmButton: false,
+                  timer: 2500,
+                });
+                navigate("/dashboard/my-parcels");
               } else {
                 Swal.fire(
                   "Error!",
