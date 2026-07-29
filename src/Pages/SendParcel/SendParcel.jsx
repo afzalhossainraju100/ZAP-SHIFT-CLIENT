@@ -8,10 +8,15 @@ import { useNavigate } from "react-router-dom";
 const SendParcel = () => {
   const [regions, setRegions] = useState([]);
   const [regionDistrictMap, setRegionDistrictMap] = useState({});
-  const { register, handleSubmit, control } = useForm();
+  const { register, handleSubmit, control, setValue } = useForm();
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setValue("senderName", user?.displayName || "");
+    setValue("senderEmail", user?.email || "");
+  }, [setValue, user?.displayName, user?.email]);
 
   // Use useWatch hook (compiler-friendly alternative to watch())
   const senderRegion = useWatch({
@@ -62,7 +67,6 @@ const SendParcel = () => {
       }
 
       //sweetAlart
-
       Swal.fire({
         title: "Agree With The Payment?",
         text: `You have to Pay ${cost} BDT!`,
@@ -78,7 +82,14 @@ const SendParcel = () => {
             .post("/parcels", { ...data, cost })
             .then((response) => {
               console.log("Parcel booking response:", response.data);
-              if (response.data.insertedId) {
+              const isBooked =
+                response.status === 200 ||
+                response.status === 201 ||
+                response.data?.insertedId ||
+                response.data?.acknowledged ||
+                response.data?.success;
+
+              if (isBooked) {
                 Swal.fire({
                   position: "top-end",
                   icon: "success",
@@ -231,7 +242,7 @@ const SendParcel = () => {
                     type="text"
                     {...register("senderName")}
                     placeholder="Sender Name"
-                    defaultValue={user?.displayName}
+                    readOnly
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>
@@ -268,7 +279,7 @@ const SendParcel = () => {
                     type="email"
                     {...register("senderEmail")}
                     placeholder="Sender Email"
-                    defaultValue={user?.email}
+                    readOnly
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>

@@ -1,22 +1,27 @@
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../Hooks/useAuth";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
+import { Link } from "react-router-dom";
 import { FiEdit } from "react-icons/fi";
 import { FaMagnifyingGlass } from "react-icons/fa6";
 import { AiOutlineDelete } from "react-icons/ai";
 import Swal from "sweetalert2";
 
-
 const MyParcels = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   // const queryClient = useQueryClient();
+  const senderEmail = user?.email || "";
 
   const { data: parcels = [], refetch } = useQuery({
-    queryKey: ["myparcels", user?.email],
-    enabled: !!user?.email,
+    queryKey: ["myparcels", senderEmail],
+    enabled: !!senderEmail,
     queryFn: async () => {
-      const res = await axiosSecure.get(`/parcels?email=${user?.email}`);
+      const queryParams = new URLSearchParams();
+      queryParams.set("email", senderEmail);
+      queryParams.set("senderEmail", senderEmail);
+
+      const res = await axiosSecure.get(`/parcels?${queryParams.toString()}`);
       return res.data;
     },
   });
@@ -50,23 +55,6 @@ const MyParcels = () => {
     });
   };
 
-  const handlePayment =async (parcel) => {
-    const paymentInfo = {
-      cost: parcel.cost,
-      senderEmail: parcel.senderEmail,
-      parcelId: parcel._id,
-      parcelName: parcel.parcelName,
-    }
-    const res = await axiosSecure.post(
-        "/create-checkout-session",
-        paymentInfo,
-      );
-      if (res.data?.url) {
-        window.location.assign(res.data.url);
-      }
-
-  };
-
   return (
     <div className="text-[#000000] mt-20 mx-4 bg-[#ffffff]">
       <h1>All of my parcels: {parcels.length}</h1>
@@ -80,7 +68,7 @@ const MyParcels = () => {
               <th>Name</th>
               <th>Parcel Type</th>
               <th>Cost</th>
-              <th>Payment </th>
+              <th>Payment Status</th>
               <th>Delivery Status</th>
               <th>Action</th>
             </tr>
@@ -96,18 +84,12 @@ const MyParcels = () => {
                   {parcel.paymentStatus === "paid" ? (
                     <span className="text-green-400">Paid</span>
                   ) : (
-                    // <Link
-                    //   to={`/dashboard/payment/${parcel._id}`}
-                    //   className="btn btn-sm bg-[#caeb66] border-[#caeb66] text-[#000000] hover:bg-[#caeb66] hover:border-[#caeb66]"
-                    // >
-                    //   Pay Now
-                    // </Link>
-                    <button
-                    onClick ={() => handlePayment(parcel)}
+                    <Link
+                      to={`/dashboard/payment/${parcel._id}`}
                       className="btn btn-sm bg-[#caeb66] border-[#caeb66] text-[#000000] hover:bg-[#caeb66] hover:border-[#caeb66]"
                     >
                       Pay Now
-                    </button>
+                    </Link>
                   )}
                 </td>
                 <td>{parcel.deliveryStatus}</td>
