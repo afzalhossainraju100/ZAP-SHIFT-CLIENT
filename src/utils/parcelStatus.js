@@ -28,3 +28,15 @@ export const formatDate = (value) => {
 
 export const getErrorMessage = (error, fallback = "Something went wrong.") =>
   error?.response?.data?.message || error?.message || fallback;
+
+// "5 min ago", "3h ago", "10 days ago"
+export const timeAgo = (value) => {
+  if (!value) return "—";
+  const seconds = Math.max(0, (Date.now() - new Date(value).getTime()) / 1000);
+  if (Number.isNaN(seconds)) return "—";
+  if (seconds < 60) return "just now";
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} min ago`;
+  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
+  const days = Math.floor(seconds / 86400);
+  return `${days} day${days === 1 ? "" : "s"} ago`;
+};

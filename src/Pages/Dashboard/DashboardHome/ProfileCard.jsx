@@ -31,7 +31,7 @@ const ProfileCard = ({ role, children }) => {
       </div>
       {children}
       <Link
-        to="/dashboard/settings"
+        to="/dashboard/profile"
         className="btn btn-sm mt-5 border-[#caeb66] bg-[#caeb66] text-black"
       >
         <FiEdit /> Edit Profile

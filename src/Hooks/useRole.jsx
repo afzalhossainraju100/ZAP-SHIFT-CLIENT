@@ -2,21 +2,26 @@ import { useQuery } from "@tanstack/react-query";
 import useAuth from "./useAuth";
 import useAxiosSecure from "./useAxiosSecure";
 
-// Returns the logged in user's role from the server: "user" | "rider" | "admin"
+// The logged in account as the server sees it:
+// role "user" | "rider" | "admin", whether the admin passed the OTP check,
+// and the rider application status ("none" | "pending" | "approved" | "rejected")
 const useRole = () => {
   const { user, loading } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  const { data: role = "user", isLoading: roleLoading } = useQuery({
-    queryKey: ["user-role", user?.email],
+  const { data, isLoading } = useQuery({
+    queryKey: ["auth-me", user?.email],
     enabled: !loading && !!user?.email,
-    queryFn: async () => {
-      const res = await axiosSecure.get("/users/role");
-      return res.data?.role || "user";
-    },
+    queryFn: async () => (await axiosSecure.get("/auth/me")).data,
   });
 
-  return { role, roleLoading: loading || roleLoading };
+  return {
+    role: data?.role || "user",
+    otpVerified: data?.otpVerified ?? true,
+    riderStatus: data?.riderStatus || "none",
+    wantsToRide: !!data?.wantsToRide,
+    roleLoading: loading || (!!user && isLoading),
+  };
 };
 
 export default useRole;

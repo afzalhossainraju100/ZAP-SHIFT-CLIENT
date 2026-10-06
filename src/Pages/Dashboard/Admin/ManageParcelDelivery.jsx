@@ -171,7 +171,7 @@ const ManageParcelDelivery = () => {
   };
 
   return (
-    <div className="mt-20 space-y-6">
+    <div className="space-y-6">
       <div className="rounded-2xl bg-white p-6 shadow-sm">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div>

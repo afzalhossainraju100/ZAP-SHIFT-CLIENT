@@ -75,7 +75,7 @@ const PaymentHistory = () => {
   }
 
   return (
-    <div className="mt-20 mx-4 min-h-screen bg-[#ffffff] text-[#000000]">
+    <div className="mx-4 min-h-screen bg-[#ffffff] text-[#000000]">
       <div className="rounded-2xl bg-linear-to-r from-[#caeb66] via-white to-[#e7f3ba] p-6 shadow-lg">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-600">
           Payment History
@@ -102,7 +102,7 @@ const PaymentHistory = () => {
             <FiHash className="text-xl" />
             <span className="text-sm font-medium">Paid amount</span>
           </div>
-          <p className="mt-3 text-3xl font-bold">${totalAmount.toFixed(2)}</p>
+          <p className="mt-3 text-3xl font-bold">৳{totalAmount.toFixed(2)}</p>
         </div>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3 text-gray-600">
@@ -155,9 +155,15 @@ const PaymentHistory = () => {
                           ""}
                       </div>
                     </td>
-                    <td className="font-semibold">
-                      ${" "}
-                      {Number(payment?.amount ?? payment?.cost ?? 0).toFixed(2)}
+                    <td>
+                      <div className="font-semibold">
+                        ৳{Number(payment?.amount ?? payment?.cost ?? 0).toFixed(2)}
+                      </div>
+                      {payment?.amountUsd != null && (
+                        <div className="text-xs text-gray-500">
+                          charged ${Number(payment.amountUsd).toFixed(2)} USD
+                        </div>
+                      )}
                     </td>
                     <td>
                       {payment?.transactionId ||

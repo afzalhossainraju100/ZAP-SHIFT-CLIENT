@@ -1,53 +1,89 @@
-import { Link, Outlet, NavLink, useNavigate } from "react-router-dom";
-import { CiDeliveryTruck } from "react-icons/ci";
+import { Link, Navigate, Outlet, NavLink, useNavigate } from "react-router-dom";
+import { useQuery } from "@tanstack/react-query";
 import {
   FiCreditCard,
-  FiHome,
   FiGrid,
   FiMapPin,
-  FiSettings,
+  FiUser,
   FiLogOut,
   FiUsers,
   FiPackage,
   FiCheckCircle,
   FiSend,
   FiNavigation,
+  FiLock,
+  FiHome,
+  FiBell,
+  FiMenu,
 } from "react-icons/fi";
 import { MdOutlineDeliveryDining, MdOutlinePedalBike } from "react-icons/md";
 import useAuth from "../Hooks/useAuth";
 import useRole from "../Hooks/useRole";
+import useAxiosSecure from "../Hooks/useAxiosSecure";
+import Loading from "../Component/Loading/Loading";
+import { Avatar } from "../Component/ProfileMenu/ProfileMenu";
 import logo from "../assets/logo.png";
 
-const linksByRole = {
+const menuByRole = {
   user: [
-    { to: "/dashboard/my-parcels", label: "My Parcels", icon: CiDeliveryTruck },
+    { to: "/dashboard", label: "Dashboard", icon: FiGrid, end: true },
+    { to: "/dashboard/my-parcels", label: "My Parcels", icon: FiPackage },
     { to: "/send-parcel", label: "Send Parcel", icon: FiSend },
     { to: "/dashboard/track", label: "Track Parcel", icon: FiMapPin },
     { to: "/dashboard/payment-history", label: "Payment History", icon: FiCreditCard },
   ],
   admin: [
-    { to: "/dashboard/delivery-management", label: "Delivery Management", icon: FiPackage },
-    { to: "/dashboard/manage-riders", label: "Manage Riders", icon: MdOutlinePedalBike },
-    { to: "/dashboard/manage-users", label: "Manage Users", icon: FiUsers },
-    { to: "/dashboard/payment-history", label: "All Payments", icon: FiCreditCard },
+    { to: "/dashboard", label: "Dashboard", icon: FiGrid, end: true },
+    { to: "/dashboard/delivery-management", label: "Deliveries", icon: FiPackage },
+    { to: "/dashboard/manage-riders", label: "Riders", icon: MdOutlinePedalBike },
+    { to: "/dashboard/manage-users", label: "Users", icon: FiUsers },
+    { to: "/dashboard/payment-history", label: "Invoices", icon: FiCreditCard },
   ],
   rider: [
+    { to: "/dashboard", label: "Dashboard", icon: FiGrid, end: true },
     { to: "/dashboard/pending-pickups", label: "Parcels to Pickup", icon: FiNavigation },
     { to: "/dashboard/pending-deliveries", label: "Parcels to Deliver", icon: MdOutlineDeliveryDining },
-    { to: "/dashboard/completed-deliveries", label: "Completed Deliveries", icon: FiCheckCircle },
+    { to: "/dashboard/completed-deliveries", label: "Completed", icon: FiCheckCircle },
   ],
 };
 
-const navClass = ({ isActive }) =>
-  `is-drawer-close:tooltip is-drawer-close:tooltip-right ${
-    isActive ? "bg-[#caeb66] font-semibold" : ""
+const itemClass = ({ isActive }) =>
+  `flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm transition ${
+    isActive
+      ? "bg-[#caeb66] font-semibold text-[#03373d]"
+      : "text-gray-600 hover:bg-gray-100"
   }`;
+
+const closeDrawer = () => {
+  const toggle = document.getElementById("dashboard-drawer");
+  if (toggle) toggle.checked = false;
+};
 
 const DashboardLayOut = () => {
   const { user, logOut } = useAuth();
-  const { role, roleLoading } = useRole();
+  const { role, otpVerified, roleLoading } = useRole();
+  const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
-  const roleLinks = linksByRole[role] || linksByRole.user;
+  const isAdmin = role === "admin" && otpVerified;
+
+  // Bell: things that need the admin's attention
+  const { data: overview } = useQuery({
+    queryKey: ["admin-overview", "week"],
+    enabled: isAdmin,
+    queryFn: async () => (await axiosSecure.get("/admin/overview?range=week")).data,
+  });
+  const alertCount = isAdmin
+    ? (overview?.alertCounts?.pendingRiders || 0) + (overview?.alertCounts?.delayed || 0)
+    : 0;
+
+  if (roleLoading) return <Loading />;
+
+  // The admin must pass the authenticator check before seeing the dashboard
+  if (role === "admin" && !otpVerified) {
+    return <Navigate to="/admin-verify" replace />;
+  }
+
+  const menu = menuByRole[role] || menuByRole.user;
 
   const handleLogOut = () => {
     logOut()
@@ -56,134 +92,122 @@ const DashboardLayOut = () => {
   };
 
   return (
-    <div className="drawer bg-gray-100 text-[#000000] lg:drawer-open">
-      <input id="my-drawer-4" type="checkbox" className="drawer-toggle" />
-      <div className="drawer-content min-h-screen">
-        {/* Navbar */}
-        <nav className="navbar w-full bg-[#ffffff] shadow-lg text-[#000000] fixed top-0 z-10 gap-3">
+    <div className="drawer bg-[#f1f2f4] text-[#000000] lg:drawer-open">
+      <input id="dashboard-drawer" type="checkbox" className="drawer-toggle" />
+
+      <div className="drawer-content flex min-h-screen flex-col">
+        {/* Top bar */}
+        <header className="sticky top-0 z-10 flex items-center justify-between gap-3 bg-white px-4 py-3 shadow-sm">
           <label
-            htmlFor="my-drawer-4"
+            htmlFor="dashboard-drawer"
             aria-label="open sidebar"
-            className="btn btn-square btn-ghost"
+            className="btn btn-square btn-ghost btn-sm lg:hidden"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              strokeLinejoin="round"
-              strokeLinecap="round"
-              strokeWidth="2"
-              fill="none"
-              stroke="currentColor"
-              className="my-1.5 inline-block size-4"
-            >
-              <path d="M4 4m0 2a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-12a2 2 0 0 1 -2 -2z"></path>
-              <path d="M9 4v16"></path>
-              <path d="M14 10l2 2l-2 2"></path>
-            </svg>
+            <FiMenu className="size-5" />
           </label>
-          <div className="px-4 p-1 rounded-lg bg-[#caeb66]">
-            Zap Shift Dashboard
+          <span className="hidden text-sm text-gray-500 lg:block">
+            Welcome back, {user?.displayName?.split(" ")[0] || "there"} 👋
+          </span>
+
+          <div className="flex items-center gap-3">
+            <Link
+              to={
+                role === "admin"
+                  ? "/dashboard/manage-riders"
+                  : role === "rider"
+                    ? "/dashboard/pending-pickups"
+                    : "/dashboard/track"
+              }
+              aria-label="Notifications"
+              className="relative flex h-9 w-9 items-center justify-center rounded-full border border-gray-200 hover:bg-gray-50"
+            >
+              <FiBell className="size-4" />
+              {alertCount > 0 && (
+                <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[10px] font-bold text-white">
+                  {alertCount > 99 ? "99+" : alertCount}
+                </span>
+              )}
+            </Link>
+            <Link
+              to="/dashboard/profile"
+              className="flex items-center gap-2 rounded-full py-1 pl-1 pr-3 hover:bg-gray-50"
+            >
+              <Avatar user={user} />
+              <span className="hidden leading-tight sm:block">
+                <span className="block max-w-36 truncate text-sm font-semibold">
+                  {user?.displayName || "Unnamed user"}
+                </span>
+                <span className="block text-xs capitalize text-gray-500">{role}</span>
+              </span>
+            </Link>
           </div>
-          {!roleLoading && (
-            <span className="badge badge-outline capitalize">{role}</span>
-          )}
-        </nav>
-        {/* Page content here */}
-        <div className="p-4">
+        </header>
+
+        <main className="flex-1 p-4 md:p-6">
           <Outlet />
-        </div>
+        </main>
       </div>
 
-      <div className="drawer-side is-drawer-close:overflow-visible z-20">
-        <label
-          htmlFor="my-drawer-4"
-          aria-label="close sidebar"
-          className="drawer-overlay"
-        ></label>
-        <div className="flex min-h-full flex-col items-start bg-[#ffffff] text-[#000000] is-drawer-close:w-14 is-drawer-open:w-64">
-          {/* Logo */}
-          <Link to="/" className="flex items-end gap-1 px-4 pt-4 is-drawer-close:hidden">
+      {/* Sidebar */}
+      <div className="drawer-side z-20">
+        <label htmlFor="dashboard-drawer" aria-label="close sidebar" className="drawer-overlay" />
+        <aside className="flex min-h-full w-64 flex-col bg-white px-4 py-5">
+          <Link to="/" className="mb-6 flex items-end gap-1 px-2">
             <img src={logo} alt="ZapShift" className="h-8" />
-            <span className="-ms-3 text-xl font-bold">ZapShift</span>
+            <span className="-ms-3 text-2xl font-extrabold text-[#03373d]">ZapShift</span>
           </Link>
 
-          {/* User info */}
-          <div className="flex w-full items-center gap-3 border-b border-gray-100 px-3 py-4">
-            {user?.photoURL ? (
-              <img
-                src={user.photoURL}
-                alt={user?.displayName || "User"}
-                className="h-9 w-9 shrink-0 rounded-full object-cover ring-2 ring-[#caeb66]"
-              />
-            ) : (
-              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#caeb66] font-bold uppercase">
-                {(user?.displayName || user?.email || "?").charAt(0)}
-              </div>
-            )}
-            <div className="min-w-0 is-drawer-close:hidden">
-              <p className="truncate text-sm font-semibold">
-                {user?.displayName || "Unnamed user"}
-              </p>
+          <p className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            Menu
+          </p>
+          <nav className="space-y-1">
+            {menu.map(({ to, label, icon: Icon, end }) => (
+              <NavLink key={to} to={to} end={end} className={itemClass} onClick={closeDrawer}>
+                <Icon className="size-4" />
+                {label}
+              </NavLink>
+            ))}
+            <NavLink to="/coverage" className={itemClass} onClick={closeDrawer}>
+              <FiMapPin className="size-4" />
+              Coverage Area
+            </NavLink>
+          </nav>
+
+          <p className="mb-2 mt-6 px-3 text-xs font-semibold uppercase tracking-wider text-gray-400">
+            General
+          </p>
+          <nav className="space-y-1">
+            <NavLink to="/dashboard/profile" className={itemClass} onClick={closeDrawer}>
+              <FiUser className="size-4" />
+              Profile & Settings
+            </NavLink>
+            <Link
+              to="/dashboard/profile#security"
+              className={itemClass({ isActive: false })}
+              onClick={closeDrawer}
+            >
+              <FiLock className="size-4" />
+              Change Password
+            </Link>
+            <Link to="/" className={itemClass({ isActive: false })}>
+              <FiHome className="size-4" />
+              Back to Home
+            </Link>
+            <button onClick={handleLogOut} className={`${itemClass({ isActive: false })} w-full`}>
+              <FiLogOut className="size-4" />
+              Logout
+            </button>
+          </nav>
+
+          {/* Signed in user */}
+          <div className="mt-auto flex items-center gap-3 rounded-xl bg-[#f6f7f8] p-3">
+            <Avatar user={user} />
+            <div className="min-w-0">
+              <p className="truncate text-sm font-semibold">{user?.displayName || "Unnamed user"}</p>
               <p className="truncate text-xs text-gray-500">{user?.email}</p>
-              <span className="mt-1 inline-block rounded-full bg-[#03373d] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-white">
-                {roleLoading ? "..." : role}
-              </span>
             </div>
           </div>
-
-          <ul className="menu w-full grow">
-            <li>
-              <NavLink to="/dashboard" end className={navClass} data-tip="Dashboard Home">
-                <FiGrid className="size-4" />
-                <span className="is-drawer-close:hidden">Dashboard Home</span>
-              </NavLink>
-            </li>
-
-            {/* Role based links */}
-            {!roleLoading &&
-              roleLinks.map(({ to, label, icon: Icon }) => (
-                <li key={to}>
-                  <NavLink to={to} className={navClass} data-tip={label}>
-                    <Icon className="size-4" />
-                    <span className="is-drawer-close:hidden">{label}</span>
-                  </NavLink>
-                </li>
-              ))}
-
-            <li>
-              <NavLink to="/dashboard/settings" className={navClass} data-tip="Settings">
-                <FiSettings className="size-4" />
-                <span className="is-drawer-close:hidden">Settings</span>
-              </NavLink>
-            </li>
-
-            {/* Public pages */}
-            <li className="menu-title is-drawer-close:hidden mt-4">Public</li>
-            <li>
-              <Link to="/" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Homepage">
-                <FiHome className="size-4" />
-                <span className="is-drawer-close:hidden">Homepage</span>
-              </Link>
-            </li>
-            <li>
-              <Link to="/coverage" className="is-drawer-close:tooltip is-drawer-close:tooltip-right" data-tip="Coverage">
-                <FiMapPin className="size-4" />
-                <span className="is-drawer-close:hidden">Coverage</span>
-              </Link>
-            </li>
-          </ul>
-
-          <div className="w-full border-t border-gray-100 p-2">
-            <button
-              onClick={handleLogOut}
-              className="btn btn-ghost w-full justify-start is-drawer-close:tooltip is-drawer-close:tooltip-right"
-              data-tip="Logout"
-            >
-              <FiLogOut className="size-4" />
-              <span className="is-drawer-close:hidden">Logout</span>
-            </button>
-          </div>
-        </div>
+        </aside>
       </div>
     </div>
   );

@@ -34,7 +34,7 @@ const ParcelDetails = () => {
 
   if (error || !parcel) {
     return (
-      <div className="mt-20 rounded-2xl bg-white p-10 text-center shadow-sm">
+      <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
         <h1 className="text-2xl font-bold">Parcel not found</h1>
         <p className="mt-2 text-gray-500">{getErrorMessage(error, "")}</p>
         <Link to="/dashboard" className="btn mt-6 bg-[#caeb66] border-[#caeb66] text-black">
@@ -45,7 +45,7 @@ const ParcelDetails = () => {
   }
 
   return (
-    <div className="mt-20 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-6 shadow-sm">
         <div>
           <h1 className="text-2xl font-bold">{parcel.parcelName}</h1>

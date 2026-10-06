@@ -10,6 +10,7 @@ import AuthLayOut from "../Layouts/AuthLayOut";
 import Rider from "../Pages/Rider/Rider";
 import PrivateRoute from "./PrivateRoute";
 import ForgetPassword from "../Pages/Auth/ForgetPassword/ForgetPassword";
+import AdminVerify from "../Pages/Auth/AdminVerify/AdminVerify";
 import { Navigate } from "react-router-dom";
 import SendParcel from "../Pages/SendParcel/SendParcel";
 import DashboardLayOut from "../Layouts/DashboardLayOut";
@@ -21,7 +22,7 @@ import PaymentHistory from "../Pages/Dashboard/PaymentHistory/PaymentHistory";
 import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
 import ParcelDetails from "../Pages/Dashboard/ParcelDetails/ParcelDetails";
 import TrackParcel from "../Pages/Dashboard/Tracking/TrackParcel";
-import Settings from "../Pages/Dashboard/Settings/Settings";
+import Profile from "../Pages/Dashboard/Profile/Profile";
 import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
 import ManageRiders from "../Pages/Dashboard/Admin/ManageRiders";
 import DeliveryManagement from "../Pages/Dashboard/Admin/DeliveryManagement";
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
         Component: ForgetPassword,
       },
       {
+        path: "admin-verify",
+        Component: AdminVerify,
+      },
+      {
         path: "enter-code",
         element: <Navigate to="/forget-password" replace />,
       },
@@ -121,8 +126,12 @@ export const router = createBrowserRouter([
         Component: ParcelDetails,
       },
       {
+        path: "profile",
+        Component: Profile,
+      },
+      {
         path: "settings",
-        Component: Settings,
+        element: <Navigate to="/dashboard/profile" replace />,
       },
       {
         path: "payment-history",

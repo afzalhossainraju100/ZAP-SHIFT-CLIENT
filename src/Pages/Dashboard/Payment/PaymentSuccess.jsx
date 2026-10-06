@@ -54,7 +54,7 @@ const PaymentSuccess = () => {
   }, [sessionId, axiosSecure, queryClient]);
 
   return (
-    <div className="mt-20 mx-4 min-h-[70vh] text-[#000000] flex items-center justify-center px-4">
+    <div className="mx-4 min-h-[70vh] text-[#000000] flex items-center justify-center px-4">
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-8 shadow-lg text-center">
         <h1 className="text-3xl font-bold">Payment Status</h1>
         <p

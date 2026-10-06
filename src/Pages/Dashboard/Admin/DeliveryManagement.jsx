@@ -30,7 +30,7 @@ const DeliveryManagement = () => {
   const total = Object.values(byStatus).reduce((sum, count) => sum + count, 0);
 
   return (
-    <div className="mt-20 space-y-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap gap-3">
         <button
           onClick={() => setStatus("")}

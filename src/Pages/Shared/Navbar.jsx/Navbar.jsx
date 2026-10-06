@@ -3,6 +3,7 @@ import { useState } from "react";
 import Logo from "../../../Component/Logo/Logo";
 import useAuth from "../../../Hooks/useAuth";
 import { Link, useNavigate } from "react-router-dom";
+import ProfileMenu, { Avatar } from "../../../Component/ProfileMenu/ProfileMenu";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -127,27 +128,9 @@ const Navbar = () => {
       <div className="hidden md:flex gap-4 list-none">{links}</div>
 
       {/* Desktop Auth Buttons */}
-      <div className="hidden md:flex gap-3">
+      <div className="hidden md:flex items-center gap-3">
         {user ? (
-          <div>
-            <a onClick={handleLogOut}>
-              <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
-                Logout
-              </button>
-            </a>
-            <Link
-              to="/dashboard/settings"
-              className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0]"
-            >
-              Profile
-            </Link>
-            <button
-              onClick={handleRiderClick}
-              className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95"
-            >
-              Be a rider
-            </button>
-          </div>
+          <ProfileMenu onLogOut={handleLogOut} />
         ) : (
           <div>
             <Link to="/signin">
@@ -191,21 +174,31 @@ const Navbar = () => {
 
             {user ? (
               <div>
-                <li>
-                  <button
-                    onClick={handleLogOut}
-                    className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95"
-                  >
-                    Logout
-                  </button>
+                <li className="mb-2 flex items-center gap-3 rounded-xl bg-[#f6f7f8] p-3">
+                  <Avatar user={user} size="h-10 w-10" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold">
+                      {user.displayName || "Unnamed user"}
+                    </p>
+                    <p className="truncate text-xs text-gray-500">{user.email}</p>
+                  </div>
                 </li>
                 <li>
                   <Link
-                    to="/dashboard/settings"
+                    to="/dashboard/profile"
+                    onClick={() => setIsMenuOpen(false)}
                     className="block w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left"
                   >
-                    Profile
+                    My Profile
                   </Link>
+                </li>
+                <li>
+                  <button
+                    onClick={handleLogOut}
+                    className="w-full px-4 py-2 text-red-600 rounded-lg transition-all duration-300 hover:bg-red-50 text-left"
+                  >
+                    Logout
+                  </button>
                 </li>
               </div>
             ) : (

@@ -68,7 +68,7 @@ const MyParcels = () => {
   };
 
   return (
-    <div className="text-[#000000] mt-20 mx-4 rounded-2xl bg-[#ffffff] p-6 shadow-sm">
+    <div className="text-[#000000] mx-4 rounded-2xl bg-[#ffffff] p-6 shadow-sm">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">My Parcels ({parcels.length})</h1>
         <form onSubmit={handleSearch} className="join">

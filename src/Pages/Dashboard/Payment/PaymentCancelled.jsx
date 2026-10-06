@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 
 const PaymentCancelled = () => {
   return (
-    <div className="mt-20 mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
+    <div className="mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-8 shadow-lg text-center">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
           Payment Cancelled

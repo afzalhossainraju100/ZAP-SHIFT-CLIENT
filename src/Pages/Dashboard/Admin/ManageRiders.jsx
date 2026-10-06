@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Loading from "../../../Component/Loading/Loading";
@@ -20,6 +20,7 @@ const escapeHtml = (value) =>
 
 const ManageRiders = () => {
   const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
   const [status, setStatus] = useState("");
 
   const { data: riders = [], isLoading, refetch } = useQuery({
@@ -29,22 +30,34 @@ const ManageRiders = () => {
   });
 
   const updateStatus = (rider, newStatus) => {
+    const approving = newStatus === "approved";
+
     Swal.fire({
-      title: `${newStatus === "approved" ? "Approve" : "Reject"} ${rider.name}?`,
-      text:
-        newStatus === "approved"
-          ? "Their role will become rider."
-          : "Their role will go back to user.",
+      // titleText is plain text, so a rider's name can't inject HTML
+      titleText: `${approving ? "Approve" : "Reject"} ${rider.name}?`,
+      text: approving
+        ? "Their role will become rider and the rider dashboard opens for them."
+        : "Their role stays user. They will see this reason on their profile.",
       icon: "question",
+      input: approving ? undefined : "textarea",
+      inputPlaceholder: "Reason for rejection (shown to the applicant)",
+      inputValidator: approving
+        ? undefined
+        : (value) => (!value?.trim() ? "Please write a short reason" : undefined),
       showCancelButton: true,
-      confirmButtonText: "Confirm",
+      confirmButtonText: approving ? "Approve" : "Reject",
+      confirmButtonColor: approving ? "#84cc16" : "#dc2626",
     }).then((result) => {
       if (!result.isConfirmed) return;
 
       axiosSecure
-        .patch(`/riders/${rider._id}/status`, { status: newStatus })
+        .patch(`/riders/${rider._id}/status`, {
+          status: newStatus,
+          reason: approving ? "" : result.value.trim(),
+        })
         .then(() => {
           refetch();
+          queryClient.invalidateQueries({ queryKey: ["admin-overview"] });
           Swal.fire("Done!", `Rider ${newStatus}.`, "success");
         })
         .catch((error) => Swal.fire("Error!", getErrorMessage(error), "error"));
@@ -57,7 +70,7 @@ const ManageRiders = () => {
     );
 
     Swal.fire({
-      title: r.name,
+      title: r.name, // escaped above
       html: `
         <div style="text-align:left;font-size:14px;line-height:1.8">
           <b>Email:</b> ${r.email}<br/>
@@ -68,13 +81,13 @@ const ManageRiders = () => {
           <b>Driving License:</b> ${r.drivingLicense}<br/>
           <b>Bike:</b> ${r.bikeModel} (${r.bikeRegistration})<br/>
           <b>Earnings:</b> ৳${r.earnings}<br/>
-          <b>About:</b> ${r.about}
+          <b>About:</b> ${r.about}${rider.status === "rejected" ? `<br/><b>Rejection reason:</b> ${r.rejectionReason}` : ""}
         </div>`,
     });
   };
 
   return (
-    <div className="mt-20 rounded-2xl bg-white p-6 shadow-sm">
+    <div className="rounded-2xl bg-white p-6 shadow-sm">
       <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
         <h1 className="text-2xl font-bold">Manage Riders ({riders.length})</h1>
         <select

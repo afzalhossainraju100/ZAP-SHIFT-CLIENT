@@ -1,42 +1,67 @@
-import { NavLink } from "react-router-dom";
+import { useState } from "react";
+import { NavLink, useLocation, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import useAuth from "../../../Hooks/useAuth";
-import { useNavigate, useLocation } from "react-router-dom";
 import SocialLogIn from "../SocialLogIn/SocialLogIn";
+import { getAuthErrorMessage } from "../../../utils/authErrors";
+
+const inputClass =
+  "w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200";
 
 const SignIn = () => {
+  const location = useLocation();
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({ defaultValues: { email: location.state?.email || "" } });
 
-  const { signInUser } = useAuth();
+  const { signInUser, loginToServer, logOut } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
-  console.log("in the log in page", location);
+  const [submitting, setSubmitting] = useState(false);
+  const [formError, setFormError] = useState("");
+  const from = location.state?.from?.pathname || "/";
 
-  const handleSignIn = (data) => {
-    console.log("SignIn data:", data);
-    signInUser(data.email, data.password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log("User signed in successfully:", user);
+  const handleSignIn = async (data) => {
+    setSubmitting(true);
+    setFormError("");
+    let signedIn = false;
 
-        // Redirect to intended page or home
-        const from = location.state?.from?.pathname || "/";
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-        console.error("Error during sign in:", error);
+    try {
+      const credential = await signInUser(data.email.trim(), data.password);
+      signedIn = true;
+
+      // An email/password Firebase account without a ZapShift profile (e.g.
+      // registration was interrupted) gets its profile created here.
+      const result = await loginToServer({
+        createIfMissing: true,
+        profile: { name: credential.user.displayName || "" },
       });
+
+      if (result.adminOtpRequired) {
+        navigate("/admin-verify", { state: { from: location.state?.from }, replace: true });
+        return;
+      }
+      navigate(from, { replace: true });
+    } catch (error) {
+      if (signedIn) await logOut();
+      setFormError(getAuthErrorMessage(error));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-8 ">
+    <div className="min-h-screen flex items-center justify-center p-8 text-black">
       <div className="w-105 max-w-full bg-white rounded-2xl shadow-lg p-10">
         <h1 className="text-4xl font-extrabold leading-tight">Welcome Back</h1>
         <div className="text-gray-500 mt-2 mb-6">Login with ZapShift</div>
+
+        {location.state?.reason === "exists" && (
+          <p className="mb-4 rounded-lg bg-lime-50 px-3 py-2 text-sm text-lime-800">
+            This email already has an account. Log in to continue.
+          </p>
+        )}
 
         <form onSubmit={handleSubmit(handleSignIn)} className="space-y-4">
           <div>
@@ -45,18 +70,17 @@ const SignIn = () => {
               {...register("email", {
                 required: "Email is required",
                 pattern: {
-                  value: /^\S+@\S+$/i,
+                  value: /^\S+@\S+\.\S+$/i,
                   message: "Please enter a valid email",
                 },
               })}
               type="email"
               placeholder="Email"
-              className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
+              autoComplete="email"
+              className={inputClass}
             />
             {errors.email && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.email.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.email.message}</p>
             )}
           </div>
 
@@ -72,12 +96,11 @@ const SignIn = () => {
               })}
               type="password"
               placeholder="Password"
-              className="w-full p-3 rounded-lg border border-gray-200 placeholder-gray-400 mb-0 focus:outline-none focus:ring-2 focus:ring-lime-200"
+              autoComplete="current-password"
+              className={inputClass}
             />
             {errors.password && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.password.message}
-              </p>
+              <p className="mt-1 text-sm text-red-500">{errors.password.message}</p>
             )}
           </div>
 
@@ -90,11 +113,16 @@ const SignIn = () => {
             </NavLink>
           </div>
 
+          {formError && (
+            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">{formError}</p>
+          )}
+
           <button
             type="submit"
-            className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition"
+            disabled={submitting}
+            className="w-full py-3 bg-lime-400 hover:bg-lime-500 rounded-lg font-semibold text-gray-900 shadow-sm transition disabled:opacity-60"
           >
-            Login
+            {submitting ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -112,7 +140,7 @@ const SignIn = () => {
         <div className="text-center text-gray-500 my-4">Or</div>
 
         <div>
-          <SocialLogIn></SocialLogIn>
+          <SocialLogIn mode="login" />
         </div>
       </div>
     </div>

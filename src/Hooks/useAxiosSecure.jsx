@@ -1,6 +1,7 @@
 import axios from "axios";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase/firebase.init";
+import { clearAdminSession, getAdminSession } from "../utils/adminSession";
 
 export const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL || "http://localhost:3000",
@@ -21,17 +22,34 @@ axiosSecure.interceptors.request.use(async (config) => {
     config.headers.Authorization = `Bearer ${token}`;
   }
 
+  // Admin only: proof that the authenticator code was entered
+  const adminSession = getAdminSession();
+  if (adminSession) {
+    config.headers["X-Admin-Session"] = adminSession;
+  }
+
   return config;
 });
 
-// A 401 means the session is no longer valid: sign out so PrivateRoute sends
-// the user to the sign in page. 403 (wrong role) is left to the caller.
 axiosSecure.interceptors.response.use(
   (response) => response,
   async (error) => {
-    if (error.response?.status === 401 && auth.currentUser) {
-      console.warn("Session expired or invalid, signing out.");
+    const status = error.response?.status;
+    const code = error.response?.data?.code;
+
+    // Session no longer valid, or a Firebase login without a ZapShift account
+    if ((status === 401 || code === "PROFILE_NOT_FOUND") && auth.currentUser) {
+      console.warn("Signing out:", error.response?.data?.message);
+      clearAdminSession();
       await signOut(auth);
+    }
+
+    // Admin session expired: ask for a new authenticator code
+    if (code === "ADMIN_OTP_REQUIRED") {
+      clearAdminSession();
+      if (window.location.pathname !== "/admin-verify") {
+        window.location.assign("/admin-verify");
+      }
     }
 
     return Promise.reject(error);

@@ -1,30 +1,88 @@
+import { useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import Swal from "sweetalert2";
 import useAuth from "../../../Hooks/useAuth";
-import { useNavigate } from "react-router-dom";
-import { useLocation } from "react-router-dom";
+import { getAuthErrorMessage, isPopupClosed } from "../../../utils/authErrors";
 
-const SocialLogIn = () => {
-  const { signInGoogle } = useAuth();
+// mode "login":    existing account -> log in, new account -> register it
+// mode "register": existing account -> go to the login page, new -> register
+const SocialLogIn = ({ mode = "login", accountType = "user" }) => {
+  const { signInGoogle, registerToServer, loginToServer, logOut } = useAuth();
   const location = useLocation();
-  console.log("in the social log in page", location);
   const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+  const from = location.state?.from?.pathname;
 
-  const handleGoogleSignIn = () => {
-    signInGoogle()
-      .then((result) => {
-        const user = result.user;
-        console.log("User signed in with Google:", user);
-        const from = location.state?.from?.pathname || "/";
-        navigate(from, { replace: true });
-      })
-      .catch((error) => {
-        console.error("Error during Google sign-in:", error);
+  const handleGoogleSignIn = async () => {
+    setBusy(true);
+    let signedIn = false;
+
+    try {
+      const result = await signInGoogle();
+      signedIn = true;
+      const googleUser = result.user;
+      const profile = {
+        name: googleUser.displayName || "",
+        photoURL: googleUser.photoURL || "",
+        accountType,
+      };
+
+      if (mode === "register") {
+        try {
+          await registerToServer(profile);
+        } catch (error) {
+          const code = error.response?.data?.code;
+          if (code === "USER_EXISTS" || error.response?.status === 403) {
+            await logOut();
+            await Swal.fire({
+              icon: "info",
+              title: "You already have an account",
+              text: `${googleUser.email} is already registered. Please log in.`,
+              confirmButtonText: "Go to Login",
+              confirmButtonColor: "#84cc16",
+            });
+            navigate("/signin", {
+              state: { ...location.state, email: googleUser.email, reason: "exists" },
+            });
+            return;
+          }
+          throw error;
+        }
+
+        navigate(accountType === "rider" ? "/rider" : from || "/dashboard", {
+          replace: true,
+        });
+        return;
+      }
+
+      const data = await loginToServer({ createIfMissing: true, profile });
+      Swal.fire({
+        toast: true,
+        position: "top-end",
+        icon: "success",
+        title: data.created ? "Account created. Welcome!" : "Welcome back!",
+        showConfirmButton: false,
+        timer: 2000,
       });
+      navigate(data.created ? "/dashboard" : from || "/", { replace: true });
+    } catch (error) {
+      if (isPopupClosed(error)) return;
+
+      // Signed in to Google but ZapShift refused (e.g. admin account)
+      if (signedIn) await logOut();
+      Swal.fire("Sign in failed", getAuthErrorMessage(error), "error");
+    } finally {
+      setBusy(false);
+    }
   };
+
   return (
     <div>
       <button
+        type="button"
         onClick={handleGoogleSignIn}
-        className="w-full py-3 bg-white border border-gray-200 rounded-lg flex items-center justify-center gap-3 shadow-sm hover:shadow-md"
+        disabled={busy}
+        className="w-full py-3 bg-white border border-gray-200 rounded-lg flex items-center justify-center gap-3 shadow-sm hover:shadow-md disabled:opacity-60"
       >
         <svg
           viewBox="0 0 533.5 544.3"
@@ -49,7 +107,13 @@ const SocialLogIn = () => {
             d="M272 107.9c37.9-.6 74.6 13 102.5 37.6l76.9-76.9C405.3 23.6 344.3 0 272 0 157.7 0 60.9 71.7 31 177.2l89.7 69.1C142 155.4 201.6 107.9 272 107.9z"
           />
         </svg>
-        <span className="text-sm">Register with Google</span>
+        <span className="text-sm">
+          {busy
+            ? "Please wait..."
+            : mode === "register"
+              ? "Register with Google"
+              : "Login with Google"}
+        </span>
       </button>
     </div>
   );

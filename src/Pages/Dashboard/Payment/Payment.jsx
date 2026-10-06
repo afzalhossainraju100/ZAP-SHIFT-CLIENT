@@ -3,10 +3,12 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Loading from "../../../Component/Loading/Loading";
+import useExchangeRate from "../../../Hooks/useExchangeRate";
 
 const Payment = () => {
   const { parcelId } = useParams();
   const axiosSecure = useAxiosSecure();
+  const { bdtPerUsd, toUsd } = useExchangeRate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
 
@@ -67,7 +69,7 @@ const Payment = () => {
 
   if (!parcelId) {
     return (
-      <div className="mt-20 mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
+      <div className="mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
         <div className="rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
           <h1 className="text-2xl font-bold">
             No parcel selected for payment.
@@ -78,21 +80,40 @@ const Payment = () => {
   }
 
   return (
-    <div className="mt-20 mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
+    <div className="mx-4 min-h-screen bg-[#ffffff] text-[#000000] flex items-center justify-center px-4">
       <div className="w-full max-w-lg rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
         <p className="text-sm uppercase tracking-[0.3em] text-gray-500">
           Payment Summary
         </p>
-        <h1 className="mt-3 text-3xl font-bold">
-          ${parcel?.cost ?? "0.00"} for {parcel?.parcelName ?? "Unknown parcel"}
+        <h1 className="mt-3 text-2xl font-bold">
+          {parcel?.parcelName ?? "Unknown parcel"}
         </h1>
         <p className="mt-2 text-sm text-gray-600">
-          Confirm the parcel details below, then continue to the secure
-          checkout.
+          Confirm the amount below, then continue to the secure checkout.
         </p>
 
-        <div className="mt-6 rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
+        <div className="mt-6 rounded-2xl bg-[#03373d] p-5 text-white">
+          <p className="text-xs uppercase tracking-widest text-white/60">
+            Delivery charge
+          </p>
+          <p className="mt-1 text-4xl font-extrabold">৳{parcel?.cost ?? 0}</p>
+          <div className="mt-4 flex items-center justify-between rounded-xl bg-white/10 px-4 py-3">
+            <span className="text-sm text-white/80">You will be charged</span>
+            <span className="text-xl font-bold text-[#caeb66]">
+              ${toUsd(parcel?.cost ?? 0).toFixed(2)} USD
+            </span>
+          </div>
+          <p className="mt-2 text-xs text-white/60">
+            Exchange rate: 1 USD = {bdtPerUsd} BDT
+          </p>
+        </div>
+
+        <div className="mt-4 rounded-xl bg-gray-50 p-4 text-sm text-gray-700">
           <p>
+            <span className="font-semibold">Route:</span>{" "}
+            {parcel?.senderDistrict} → {parcel?.receiverDistrict}
+          </p>
+          <p className="mt-2">
             <span className="font-semibold">Parcel ID:</span>{" "}
             {parcel?._id ?? "N/A"}
           </p>

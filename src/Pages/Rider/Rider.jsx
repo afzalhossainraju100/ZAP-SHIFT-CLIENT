@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Swal from "sweetalert2";
 import riderImage from "../../assets/agent-pending.png";
 import useAuth from "../../Hooks/useAuth";
 import useAxiosSecure from "../../Hooks/useAxiosSecure";
+import useRole from "../../Hooks/useRole";
 import { getErrorMessage } from "../../utils/parcelStatus";
 
 const inputClass =
@@ -22,7 +23,9 @@ const fields = [
 
 const Rider = () => {
   const { user } = useAuth();
+  const { role, wantsToRide } = useRole();
   const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
   const [serviceCenters, setServiceCenters] = useState([]);
   const [submitting, setSubmitting] = useState(false);
   const {
@@ -66,6 +69,7 @@ const Rider = () => {
       await axiosSecure.post("/riders", data);
       reset();
       refetch();
+      queryClient.invalidateQueries({ queryKey: ["auth-me"] });
       Swal.fire(
         "Application submitted!",
         "An admin will review your application soon.",
@@ -78,7 +82,8 @@ const Rider = () => {
     }
   };
 
-  const hasOpenApplication = application && application.status !== "rejected";
+  const hasOpenApplication =
+    role === "admin" || role === "rider" || (application && application.status !== "rejected");
 
   return (
     <div className="min-h-screen bg-[#f6f7f8] p-4 md:p-8">
@@ -103,21 +108,40 @@ const Rider = () => {
 
               {hasOpenApplication ? (
                 <div className="mt-6 rounded-xl border border-lime-300 bg-lime-50 p-6">
-                  <p className="text-lg font-semibold text-[#043B45]">
-                    Your application is{" "}
-                    <span className="capitalize">{application.status}</span>
-                  </p>
-                  <p className="mt-2 text-sm text-slate-600">
-                    {application.status === "approved"
-                      ? "You are a ZapShift rider. Open your dashboard to see your tasks."
-                      : `Submitted for ${application.district}. We will review it shortly.`}
-                  </p>
+                  {role === "admin" ? (
+                    <p className="text-lg font-semibold text-[#043B45]">
+                      The admin account can't apply as a rider.
+                    </p>
+                  ) : (
+                    <>
+                      <p className="text-lg font-semibold text-[#043B45]">
+                        Your application is{" "}
+                        <span className="capitalize">
+                          {role === "rider" ? "approved" : application.status}
+                        </span>
+                      </p>
+                      <p className="mt-2 text-sm text-slate-600">
+                        {role === "rider"
+                          ? "You are a ZapShift rider. Open your dashboard to see your tasks."
+                          : `Submitted for ${application.district}. An admin will review it shortly.`}
+                      </p>
+                    </>
+                  )}
                 </div>
               ) : (
                 <form onSubmit={handleSubmit(onSubmit)} className="mt-6 space-y-4">
                   {application?.status === "rejected" && (
-                    <p className="rounded-md bg-red-50 p-3 text-sm text-red-700">
-                      Your previous application was rejected. You can apply again.
+                    <div className="rounded-md bg-red-50 p-3 text-sm text-red-700">
+                      <p className="font-semibold">Your previous application was rejected.</p>
+                      {application.rejectionReason && (
+                        <p className="mt-1">Reason: {application.rejectionReason}</p>
+                      )}
+                      <p className="mt-1">You can fix the details and apply again.</p>
+                    </div>
+                  )}
+                  {!application && wantsToRide && (
+                    <p className="rounded-md bg-lime-50 p-3 text-sm text-lime-800">
+                      Your account is ready. Complete this application to become a rider.
                     </p>
                   )}
 

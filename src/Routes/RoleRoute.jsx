@@ -1,14 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import useRole from "../Hooks/useRole";
 import Loading from "../Component/Loading/Loading";
 
 // Renders children only when the user's role is one of `allow`.
 // Use inside a PrivateRoute (the dashboard already is one).
 const RoleRoute = ({ allow, children }) => {
-  const { role, roleLoading } = useRole();
+  const { role, otpVerified, roleLoading } = useRole();
 
   if (roleLoading) {
     return <Loading />;
+  }
+
+  // The admin must enter the authenticator code before using admin pages
+  if (role === "admin" && !otpVerified) {
+    return <Navigate to="/admin-verify" replace />;
   }
 
   if (allow.includes(role)) {
@@ -16,7 +21,7 @@ const RoleRoute = ({ allow, children }) => {
   }
 
   return (
-    <div className="mt-20 flex min-h-[60vh] items-center justify-center px-4 text-[#000000]">
+    <div className="flex min-h-[60vh] items-center justify-center px-4 text-[#000000]">
       <div className="max-w-md rounded-2xl bg-white p-8 text-center shadow-lg">
         <p className="text-sm font-semibold uppercase tracking-[0.3em] text-red-500">
           403 Forbidden

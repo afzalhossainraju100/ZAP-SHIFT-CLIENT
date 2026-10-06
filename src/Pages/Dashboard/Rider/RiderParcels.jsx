@@ -59,7 +59,7 @@ const RiderParcels = ({ type }) => {
   };
 
   return (
-    <div className="mt-20 rounded-2xl bg-white p-6 shadow-sm">
+    <div className="rounded-2xl bg-white p-6 shadow-sm">
       <h1 className="mb-6 text-2xl font-bold">
         {title} ({parcels.length})
       </h1>

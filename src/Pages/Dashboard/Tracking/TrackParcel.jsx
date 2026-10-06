@@ -38,7 +38,7 @@ const TrackParcel = () => {
   };
 
   return (
-    <div className="mt-20 space-y-6">
+    <div className="space-y-6">
       <div className="rounded-2xl bg-white p-6 shadow-sm">
         <h1 className="text-2xl font-bold">Track a Parcel</h1>
         <form onSubmit={handleSubmit} className="join mt-4 w-full max-w-xl">
