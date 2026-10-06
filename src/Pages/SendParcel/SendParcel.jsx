@@ -8,8 +8,15 @@ import { useNavigate } from "react-router-dom";
 const SendParcel = () => {
   const [regions, setRegions] = useState([]);
   const [regionDistrictMap, setRegionDistrictMap] = useState({});
-  const { register, handleSubmit, control, setValue } = useForm();
-  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    control,
+    setValue,
+    formState: { errors },
+  } = useForm();
+  const { user, loading: authLoading } = useAuth();
   const axiosSecure = useAxiosSecure();
   const navigate = useNavigate();
 
@@ -23,6 +30,11 @@ const SendParcel = () => {
     control,
     name: "senderRegion",
     defaultValue: "",
+  });
+  const parcelType = useWatch({
+    control,
+    name: "parcelType",
+    defaultValue: "document",
   });
   const receiverRegion = useWatch({
     control,
@@ -42,8 +54,14 @@ const SendParcel = () => {
   );
 
   const handleSendParcel = useCallback(
-    (data) => {
-      console.log(data);
+    async (data) => {
+      console.log("Form Data:", data);
+
+      // Validate user is authenticated
+      if (!user) {
+        Swal.fire("Error!", "Please log in to book a parcel.", "error");
+        return;
+      }
 
       const isSameDistrict = data.senderDistrict === data.receiverDistrict;
       const isDocument = data.parcelType === "document";
@@ -75,54 +93,70 @@ const SendParcel = () => {
         confirmButtonColor: "#3085d6",
         cancelButtonColor: "#d33",
         confirmButtonText: "Agreed!",
-      }).then((result) => {
+      }).then(async (result) => {
         if (result.isConfirmed) {
-          //save the parcel to the database
-          axiosSecure
-            .post("/parcels", { ...data, cost })
-            .then((response) => {
-              console.log("Parcel booking response:", response.data);
-              const isBooked =
-                response.status === 200 ||
-                response.status === 201 ||
-                response.data?.insertedId ||
-                response.data?.acknowledged ||
-                response.data?.success;
+          setIsSubmitting(true);
+          try {
+            // The Firebase token is attached automatically by useAxiosSecure
+            const response = await axiosSecure.post("/parcels", data);
 
-              if (isBooked) {
-                Swal.fire({
-                  position: "top-end",
-                  icon: "success",
-                  title: "Parcel Booked. Please Pay",
-                  showConfirmButton: false,
-                  timer: 2500,
-                });
-                navigate("/dashboard/my-parcels");
-              } else {
-                Swal.fire(
-                  "Error!",
-                  "There was an issue booking your parcel. Please try again.",
-                  "error",
-                );
-              }
-            })
-            .catch((error) => {
-              console.error("Error booking parcel:", error);
-              Swal.fire(
-                "Error!",
-                "There was an issue booking your parcel. Please try again.",
-                "error",
+            console.log("Parcel booking response:", response);
+            console.log("Response status:", response.status);
+            console.log("Response data:", response.data);
+
+            const isBooked =
+              response.status === 200 ||
+              response.status === 201 ||
+              response.data?.insertedId ||
+              response.data?.acknowledged ||
+              response.data?.success;
+
+            if (isBooked) {
+              Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Parcel Booked Successfully!",
+                text: "You will be redirected to payment.",
+                showConfirmButton: false,
+                timer: 2500,
+              });
+              setTimeout(() => navigate("/dashboard/my-parcels"), 1500);
+            } else {
+              console.warn(
+                "Booking response doesn't indicate success:",
+                response.data,
               );
-            });
+              Swal.fire(
+                "Warning!",
+                "Parcel may have been booked but confirmation unclear. Please check My Parcels.",
+                "warning",
+              );
+            }
+          } catch (error) {
+            console.error("Error booking parcel:", error);
+            console.error("Error response:", error.response?.data);
+            console.error("Error status:", error.response?.status);
+            console.error("Error message:", error.message);
+
+            let errorMessage =
+              "There was an issue booking your parcel. Please try again.";
+
+            if (error.response?.data?.message) {
+              errorMessage = error.response.data.message;
+            } else if (error.response?.data?.error) {
+              errorMessage = error.response.data.error;
+            } else if (error.message) {
+              errorMessage = error.message;
+            }
+
+            Swal.fire("Error!", errorMessage, "error");
+          } finally {
+            setIsSubmitting(false);
+          }
         }
       });
-
-      //sweetalart
-
-      // const bookingPayload = { ...data, cost };
-      // console.log("Calculated Booking Payload:", bookingPayload);
     },
-    [axiosSecure],
+    [axiosSecure, user, navigate],
   );
 
   useEffect(() => {
@@ -208,7 +242,7 @@ const SendParcel = () => {
                 </label>
                 <input
                   type="text"
-                  {...register("parcelName")}
+                  {...register("parcelName", { required: true })}
                   placeholder="Parcel Name"
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                 />
@@ -219,8 +253,18 @@ const SendParcel = () => {
                 </label>
                 <input
                   type="number"
-                  {...register("parcelWeight")}
-                  placeholder="Parcel Weight (KG)"
+                  {...register("parcelWeight", {
+                    validate: (value, values) =>
+                      values.parcelType === "document" || Number(value) > 0,
+                  })}
+                  disabled={parcelType === "document"}
+                  step="0.1"
+                  min="0"
+                  placeholder={
+                    parcelType === "document"
+                      ? "Not needed for documents"
+                      : "Parcel Weight (KG)"
+                  }
                   className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                 />
               </div>
@@ -240,9 +284,8 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("senderName")}
+                    {...register("senderName", { required: true })}
                     placeholder="Sender Name"
-                    readOnly
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
                 </div>
@@ -253,7 +296,7 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("senderAddress")}
+                    {...register("senderAddress", { required: true })}
                     placeholder="Address"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
@@ -265,7 +308,7 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="tel"
-                    {...register("senderPhone")}
+                    {...register("senderPhone", { required: true })}
                     placeholder="Sender Phone No"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
@@ -289,7 +332,7 @@ const SendParcel = () => {
                     Your Region
                   </label>
                   <select
-                    {...register("senderRegion")}
+                    {...register("senderRegion", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
                   >
                     <option value="">Select your Region</option>
@@ -306,7 +349,7 @@ const SendParcel = () => {
                     Your District
                   </label>
                   <select
-                    {...register("senderDistrict")}
+                    {...register("senderDistrict", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
                     disabled={!senderRegion}
                   >
@@ -344,7 +387,7 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("receiverName")}
+                    {...register("receiverName", { required: true })}
                     placeholder="Receiver Name"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
@@ -356,7 +399,7 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="text"
-                    {...register("receiverAddress")}
+                    {...register("receiverAddress", { required: true })}
                     placeholder="Address"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
@@ -368,7 +411,7 @@ const SendParcel = () => {
                   </label>
                   <input
                     type="tel"
-                    {...register("receiverContact")}
+                    {...register("receiverContact", { required: true })}
                     placeholder="Receiver Contact No"
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent"
                   />
@@ -391,7 +434,7 @@ const SendParcel = () => {
                     Receiver Region
                   </label>
                   <select
-                    {...register("receiverRegion")}
+                    {...register("receiverRegion", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
                   >
                     <option value="">Select Receiver Region</option>
@@ -408,7 +451,7 @@ const SendParcel = () => {
                     Receiver District
                   </label>
                   <select
-                    {...register("receiverDistrict")}
+                    {...register("receiverDistrict", { required: true })}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#caeb66] focus:border-transparent bg-white"
                     disabled={!receiverRegion}
                   >
@@ -442,13 +485,22 @@ const SendParcel = () => {
               </p>
             </div>
 
+            {Object.keys(errors).length > 0 && (
+              <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700">
+                Please fill in all fields
+                {errors.parcelWeight ? " (weight is required for non-document parcels)" : ""}.
+                Only the instructions and receiver email are optional.
+              </p>
+            )}
+
             {/* Submit Button */}
             <div>
               <button
                 type="submit"
-                className="w-full md:w-auto px-8 py-3 bg-[#caeb66] hover:bg-[#b8d955] text-[#03373d] font-bold rounded-lg transition-colors duration-300 ease-in-out"
+                disabled={authLoading || isSubmitting}
+                className="w-full md:w-auto px-8 py-3 bg-[#caeb66] hover:bg-[#b8d955] disabled:bg-gray-400 disabled:cursor-not-allowed text-[#03373d] font-bold rounded-lg transition-colors duration-300 ease-in-out"
               >
-                Proceed to Confirm Booking
+                {isSubmitting ? "Processing..." : "Proceed to Confirm Booking"}
               </button>
             </div>
           </form>

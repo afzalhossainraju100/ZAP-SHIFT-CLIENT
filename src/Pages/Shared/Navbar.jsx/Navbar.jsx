@@ -116,12 +116,6 @@ const Navbar = () => {
     </>
   );
 
-  {
-    user && <>
-    <li><NavLink to="/dashboard/my-parcels">My Parcel</NavLink></li>
-    </>
-  }
-
   return (
     <div className="fixed top-4 left-4 right-4 z-50 flex items-center justify-between bg-[#ffffff] text-[#000000] font-[#000000] px-4 py-1 rounded-3xl shadow-md">
       {/* Logo Section */}
@@ -141,8 +135,17 @@ const Navbar = () => {
                 Logout
               </button>
             </a>
-            <button className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95">
+            <Link
+              to="/dashboard/settings"
+              className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0]"
+            >
               Profile
+            </Link>
+            <button
+              onClick={handleRiderClick}
+              className="px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] hover:scale-105 active:scale-95"
+            >
+              Be a rider
             </button>
           </div>
         ) : (
@@ -189,21 +192,30 @@ const Navbar = () => {
             {user ? (
               <div>
                 <li>
-                  <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                  <button
+                    onClick={handleLogOut}
+                    className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95"
+                  >
                     Logout
                   </button>
                 </li>
                 <li>
-                  <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                  <Link
+                    to="/dashboard/settings"
+                    className="block w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left"
+                  >
                     Profile
-                  </button>
+                  </Link>
                 </li>
               </div>
             ) : (
               <li>
-                <button className="w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left hover:scale-105 active:scale-95">
+                <Link
+                  to="/signin"
+                  className="block w-full px-4 py-2 text-[#000000] rounded-lg transition-all duration-300 hover:bg-[#f0f0f0] text-left"
+                >
                   Sign In
-                </button>
+                </Link>
               </li>
             )}
           </ul>

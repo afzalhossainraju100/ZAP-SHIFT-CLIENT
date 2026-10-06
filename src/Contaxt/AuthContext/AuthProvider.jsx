@@ -12,6 +12,7 @@ import {
 } from "firebase/auth";
 import { auth } from "../../firebase/firebase.init";
 import { useEffect, useState } from "react";
+import { axiosSecure } from "../../Hooks/useAxiosSecure";
 
 const GoogleProvider = new GoogleAuthProvider();
 
@@ -42,7 +43,9 @@ const AuthProvider = ({ children }) => {
   const updateUserProfile = (profile) => {
     if (!auth.currentUser)
       return Promise.reject(new Error("No authenticated user"));
-    return updateProfile(auth.currentUser, profile);
+    return updateProfile(auth.currentUser, profile).then(() =>
+      saveUserToDatabase(profile),
+    );
   };
 
   const handleSendPasswordResetEmail = (email) => {
@@ -53,10 +56,26 @@ const AuthProvider = ({ children }) => {
     return confirmPasswordReset(auth, code, newPassword);
   };
 
+  // Save / refresh the user in the database so the server knows their role.
+  // New users get the "user" role on the server.
+  const saveUserToDatabase = (profile = {}) => {
+    return axiosSecure.post("/users", {
+      name: profile.displayName ?? auth.currentUser?.displayName ?? "",
+      photoURL: profile.photoURL ?? auth.currentUser?.photoURL ?? "",
+    });
+  };
+
   //observe user state
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+      if (currentUser) {
+        try {
+          await saveUserToDatabase();
+        } catch (error) {
+          console.error("Could not sync user with the server:", error.message);
+        }
+      }
       setUser(currentUser);
       setLoading(false);
     });

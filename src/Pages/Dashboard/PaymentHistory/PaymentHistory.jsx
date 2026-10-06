@@ -1,5 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import useAuth from "../../../Hooks/useAuth";
+import useRole from "../../../Hooks/useRole";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Loading from "../../../Component/Loading/Loading";
 import { FiClock, FiHash, FiCreditCard } from "react-icons/fi";
@@ -28,21 +29,19 @@ const formatRelativeTime = (value) => {
 
 const PaymentHistory = () => {
   const { user, loading: authLoading } = useAuth();
+  const { role } = useRole();
   const axiosSecure = useAxiosSecure();
   const email = user?.email || "";
 
   const { data: payments = [], isLoading } = useQuery({
     queryKey: ["payment-history", email],
-    enabled: !!email,
+    enabled: !!email && !authLoading,
+    staleTime: 1000 * 60 * 5, // 5 minutes
     queryFn: async () => {
-      const queryParams = new URLSearchParams();
-      queryParams.set("email", email);
-      queryParams.set("senderEmail", email);
-      queryParams.set("customerEmail", email);
-
-      const res = await axiosSecure.get(`/payments?${queryParams.toString()}`);
-      const records = res.data?.payments ?? res.data ?? [];
-
+      // The token is attached by useAxiosSecure. The server returns the
+      // user's own payments (or every payment for admins).
+      const res = await axiosSecure.get("/payments");
+      const records = res.data?.data ?? [];
       return Array.isArray(records) ? records : [];
     },
   });
@@ -81,7 +80,9 @@ const PaymentHistory = () => {
         <p className="text-sm uppercase tracking-[0.3em] text-gray-600">
           Payment History
         </p>
-        <h1 className="mt-2 text-3xl font-bold">Your completed payments</h1>
+        <h1 className="mt-2 text-3xl font-bold">
+          {role === "admin" ? "All payments" : "Your completed payments"}
+        </h1>
         <p className="mt-2 max-w-2xl text-sm text-gray-700">
           Review every payment made from your account, including the transaction
           reference and how long ago it was completed.
@@ -101,7 +102,7 @@ const PaymentHistory = () => {
             <FiHash className="text-xl" />
             <span className="text-sm font-medium">Paid amount</span>
           </div>
-          <p className="mt-3 text-3xl font-bold">৳ {totalAmount.toFixed(2)}</p>
+          <p className="mt-3 text-3xl font-bold">${totalAmount.toFixed(2)}</p>
         </div>
         <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
           <div className="flex items-center gap-3 text-gray-600">
@@ -155,7 +156,7 @@ const PaymentHistory = () => {
                       </div>
                     </td>
                     <td className="font-semibold">
-                      ৳{" "}
+                      ${" "}
                       {Number(payment?.amount ?? payment?.cost ?? 0).toFixed(2)}
                     </td>
                     <td>

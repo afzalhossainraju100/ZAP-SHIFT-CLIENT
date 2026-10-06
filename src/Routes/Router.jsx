@@ -18,6 +18,16 @@ import Payment from "../Pages/Dashboard/Payment/Payment";
 import PaymentSuccess from "../Pages/Dashboard/Payment/PaymentSuccess";
 import PaymentCancelled from "../Pages/Dashboard/Payment/PaymentCancelled";
 import PaymentHistory from "../Pages/Dashboard/PaymentHistory/PaymentHistory";
+import DashboardHome from "../Pages/Dashboard/DashboardHome/DashboardHome";
+import ParcelDetails from "../Pages/Dashboard/ParcelDetails/ParcelDetails";
+import TrackParcel from "../Pages/Dashboard/Tracking/TrackParcel";
+import Settings from "../Pages/Dashboard/Settings/Settings";
+import ManageUsers from "../Pages/Dashboard/Admin/ManageUsers";
+import ManageRiders from "../Pages/Dashboard/Admin/ManageRiders";
+import DeliveryManagement from "../Pages/Dashboard/Admin/DeliveryManagement";
+import ManageParcelDelivery from "../Pages/Dashboard/Admin/ManageParcelDelivery";
+import RiderParcels from "../Pages/Dashboard/Rider/RiderParcels";
+import { AdminRoute, RiderRoute } from "./RoleRoute";
 
 export const router = createBrowserRouter([
   {
@@ -101,17 +111,36 @@ export const router = createBrowserRouter([
       </PrivateRoute>
     ),
     children: [
+      // Shared (every role)
+      {
+        index: true,
+        Component: DashboardHome,
+      },
+      {
+        path: "parcel/:id",
+        Component: ParcelDetails,
+      },
+      {
+        path: "settings",
+        Component: Settings,
+      },
+      {
+        path: "payment-history",
+        Component: PaymentHistory,
+      },
+
+      // User
       {
         path: "my-parcels",
         Component: MyParcels,
       },
       {
-        path: "payment/:parcelId",
-        Component: Payment,
+        path: "track",
+        Component: TrackParcel,
       },
       {
-        path: "payment-history",
-        Component: PaymentHistory,
+        path: "payment/:parcelId",
+        Component: Payment,
       },
       {
         path: "payment-success",
@@ -120,6 +149,66 @@ export const router = createBrowserRouter([
       {
         path: "payment-cancelled",
         Component: PaymentCancelled,
+      },
+
+      // Admin only
+      {
+        path: "manage-users",
+        element: (
+          <AdminRoute>
+            <ManageUsers />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "manage-riders",
+        element: (
+          <AdminRoute>
+            <ManageRiders />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "delivery-management",
+        element: (
+          <AdminRoute>
+            <DeliveryManagement />
+          </AdminRoute>
+        ),
+      },
+      {
+        path: "manage-parcel/:id",
+        element: (
+          <AdminRoute>
+            <ManageParcelDelivery />
+          </AdminRoute>
+        ),
+      },
+
+      // Rider only
+      {
+        path: "pending-pickups",
+        element: (
+          <RiderRoute>
+            <RiderParcels type="pickup" key="pickup" />
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "pending-deliveries",
+        element: (
+          <RiderRoute>
+            <RiderParcels type="delivery" key="delivery" />
+          </RiderRoute>
+        ),
+      },
+      {
+        path: "completed-deliveries",
+        element: (
+          <RiderRoute>
+            <RiderParcels type="completed" key="completed" />
+          </RiderRoute>
+        ),
       },
     ],
   },

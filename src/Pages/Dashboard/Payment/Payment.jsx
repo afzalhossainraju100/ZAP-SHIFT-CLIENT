@@ -1,13 +1,11 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
-import useAuth from "../../../Hooks/useAuth";
 import useAxiosSecure from "../../../Hooks/useAxiosSecure";
 import Loading from "../../../Component/Loading/Loading";
 
 const Payment = () => {
   const { parcelId } = useParams();
-  const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [paymentError, setPaymentError] = useState("");
@@ -41,26 +39,10 @@ const Payment = () => {
     try {
       setIsSubmitting(true);
 
-      const successUrl = `${window.location.origin}/dashboard/payment-success?session_id={CHECKOUT_SESSION_ID}`;
-      const cancelUrl = `${window.location.origin}/dashboard/payment-cancelled`;
-
-      const paymentInfo = {
+      // The server reads the cost from the database, so only the id is sent
+      const res = await axiosSecure.post("/create-checkout-session", {
         parcelId: parcel._id,
-        parcelName: parcel.parcelName,
-        cost: amount,
-        amount,
-        senderEmail: parcel.senderEmail,
-        customerEmail: user?.email ?? parcel.senderEmail,
-        success_url: successUrl,
-        cancel_url: cancelUrl,
-        successUrl,
-        cancelUrl,
-      };
-
-      const res = await axiosSecure.post(
-        "/create-checkout-session",
-        paymentInfo,
-      );
+      });
 
       if (res.data?.url) {
         window.location.href = res.data.url;
@@ -71,7 +53,8 @@ const Payment = () => {
     } catch (error) {
       console.error("Payment request failed:", error);
       setPaymentError(
-        "Payment could not be started. Check your connection and try again.",
+        error.response?.data?.message ||
+          "Payment could not be started. Check your connection and try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -119,6 +102,12 @@ const Payment = () => {
           </p>
         </div>
 
+        {parcel?.paymentStatus === "paid" ? (
+          <div className="mt-5 rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700">
+            This parcel is already paid. Tracking ID: {parcel.trackingId}
+          </div>
+        ) : null}
+
         {paymentError ? (
           <div className="mt-5 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
             {paymentError}
@@ -127,7 +116,7 @@ const Payment = () => {
 
         <button
           onClick={handlePayment}
-          disabled={isSubmitting || !parcel?._id}
+          disabled={isSubmitting || !parcel?._id || parcel?.paymentStatus === "paid"}
           className="mt-6 w-full rounded-xl bg-[#caeb66] px-4 py-3 font-semibold text-black transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-60"
         >
           {isSubmitting ? "Redirecting to checkout..." : "Proceed to Payment"}
